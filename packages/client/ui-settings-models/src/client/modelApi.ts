@@ -15,7 +15,12 @@ export const MODEL_API_OPTIONS: readonly { value: string; labelKey: ModelsKey }[
   { value: 'openai-responses', labelKey: 'modelApiResponses' },
 ]
 
-/** Whether a stored value is one the picker offers; the adapter accepts more spellings, so this gates display, not storage. */
+/**
+ * Whether a stored value is one the picker offers; the adapter accepts more
+ * spellings, so this gates display, not storage.
+ * @param value - the stored `api` value.
+ * @returns whether the picker renders this spelling as one of its choices.
+ */
 export function isSelectableModelApi(value: unknown): boolean {
   return typeof value === 'string' && MODEL_API_OPTIONS.some(option => option.value === value)
 }
