@@ -111,6 +111,15 @@ describe('SessionModes', () => {
     expect(modes.get(session)).toBe('design')
     expect(session.events.at(-1)).toMatchObject({ type: 'mode/set', data: { mode: 'design' } })
   })
+
+  it('switches into vibe mode and folds it back', async () => {
+    const { ctx, modes } = await boot()
+    const session = ctx.sessions.create()
+
+    modes.set(session, 'vibe')
+    expect(modes.get(session)).toBe('vibe')
+    expect(session.events.at(-1)).toMatchObject({ type: 'mode/set', data: { mode: 'vibe' } })
+  })
 })
 
 describe('SessionModesGateway', () => {

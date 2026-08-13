@@ -4,9 +4,11 @@ English | [中文](README.zh.md)
 
 Durable per-session agent modes. The host plane registers the `sessionModes` service (fold the latest `mode/set` event from a session's log; append a `mode/set` event to switch) and the `sessionModesRemote` Typert Remote (`get`/`set` by session id — live sessions read from the store, cold sessions fold from persistence, switches require a live session). The agent plane (`./agent`, mounted as a preset row) registers one live prompt section that renders the session's current mode and its guidance at every assembly, so a switch is visible to the very next model request.
 
-Modes are advisory: the `mode/set` event is `ignorable` for readers that do not know it, and a mode changes future behavior through the prompt section only. The shipped modes are `standard`, `creative`, and `design`; vibe and spec modes arrive with their own issues.
+Modes are advisory: the `mode/set` event is `ignorable` for readers that do not know it, and a mode changes future behavior through the prompt section only. The shipped modes are `standard`, `creative`, `design`, and `vibe`; the spec mode arrives with its own issue.
 
 Design mode is enforced, not just advisory: while a session is in design mode the host plane denies the filesystem read/write tools (`read`, `write`, `edit`, `read_image`, `glob`, `grep`) and the command executors (`bash`, `pwsh`) at the `tools/pre-execute` waterfall. Research tools (web search, subagents, skills) stay available, because design mode delegates research and argumentation to subagents by default.
+
+Vibe mode is workflow-directed: its guidance routes implementation through the fixed agent-cluster workflow ([`dsh-tool-vibe-workflow`](../../workflow/tool-vibe-workflow/README.md)) — product manager, parallel UI designer and architect, per-module frontend/backend engineers, test engineer, and issue escalation.
 
 ## Model Experience
 
