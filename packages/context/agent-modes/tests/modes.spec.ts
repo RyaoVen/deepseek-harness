@@ -102,6 +102,15 @@ describe('SessionModes', () => {
     expect(modes.get(session)).toBe('creative')
     expect(session.events.at(-1)).toMatchObject({ type: 'mode/set', data: { mode: 'creative' } })
   })
+
+  it('switches into design mode and folds it back', async () => {
+    const { ctx, modes } = await boot()
+    const session = ctx.sessions.create()
+
+    modes.set(session, 'design')
+    expect(modes.get(session)).toBe('design')
+    expect(session.events.at(-1)).toMatchObject({ type: 'mode/set', data: { mode: 'design' } })
+  })
 })
 
 describe('SessionModesGateway', () => {
