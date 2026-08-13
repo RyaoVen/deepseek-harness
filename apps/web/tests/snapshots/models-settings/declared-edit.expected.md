@@ -57,6 +57,7 @@
             - /placeholder: 显示名称
           - button "容量 1"
           - button "删除模型 1"
+          - text: 跟随提供商
           - button "添加模型"
       - button "取消"
       - button "保存"
