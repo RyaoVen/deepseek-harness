@@ -208,6 +208,10 @@
       "@deepseek-ai/dsh-client-ui-skill": ["./packages/client/ui-skill/src"],
       "@deepseek-ai/dsh-client-ui-subagent": ["./packages/client/ui-subagent/src"],
       "@deepseek-ai/dsh-client-ui-settings-plugins": ["./packages/client/ui-settings-plugins/src"],
+      "@deepseek-ai/dsh-client-ui-usage-dashboard": ["./packages/client/ui-usage-dashboard/src"],
+      // The usage-dashboard types subpath (`@deepseek-ai/dsh-host-usage-dashboard/types`)
+      // prefix-matches this entry; the generic wildcard cannot map it.
+      "@deepseek-ai/dsh-host-usage-dashboard": ["./packages/host/usage-dashboard/src"],
       // The extensions-center client subpath (`@deepseek-ai/dsh-extensions-center/client`)
       // prefix-matches this entry; the generic wildcard cannot map it.
       "@deepseek-ai/dsh-extensions-center": ["./packages/extensions/extensions-center/src"],
