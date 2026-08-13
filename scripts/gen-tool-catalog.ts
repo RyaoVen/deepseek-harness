@@ -551,7 +551,7 @@ const TOOL_PACKAGES: ToolPackage[] = [
       await ctx.plugin(ToolVibeWorkflow)
     },
     note:
-      'vibe runs one canned cluster script; only request/answers are model-facing, so the schema stays stable across role-prompt edits.',
+      'vibe runs one canned cluster script; only request/answers and the spec prefills are model-facing, so the schema stays stable across role-prompt edits.',
   },
   {
     pkg: '@deepseek-ai/dsh-tool-web',

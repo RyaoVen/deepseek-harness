@@ -38,7 +38,7 @@ This table connects model-visible tool names to the plugin package and service s
 | `@deepseek-ai/dsh-tool-jobs` | `job_kill`, `job_list`, `job_output` | `ctx.tools`, `ctx.jobs`, `ctx.systemPrompt` | `tool/call`, `tool/result`, `user/message via agent.inject() for background completion notices` | - | The kind-agnostic background-job controller: background bash commands, PTY sends, and subagents are read, listed, and killed through the same three tools. Loading the plugin attaches the controller that arms producers' `ctx.jobs.start()`. |
 | `@deepseek-ai/dsh-tool-todo` | `todo_write` | `ctx.tools`, `owning Agent session` | `tool/call`, `todo/write`, `tool/result` | - | todo_write is session-owned state; UIs render the latest todo/write event as a checklist. `allowParallelInProgress` is required with no default, so the catalog states its choice: `true`, whose description invites several `in_progress` items. A deployment choosing `false` receives the same tool with a description asking for exactly one active task. |
 | `@deepseek-ai/dsh-tool-workflow` | `workflow` | `ctx.tools`, `ctx.workflowEngine`, `ctx.systemPrompt`, `a calling Agent (exec.agent parents the script children)` | `tool/call`, `tool/result` | - | - |
-| `@deepseek-ai/dsh-tool-vibe-workflow` | `vibe` | `ctx.tools`, `ctx.workflowEngine`, `ctx.systemPrompt`, `a calling Agent (exec.agent parents the cluster children)` | `tool/call`, `tool/result` | - | vibe runs one canned cluster script; only request/answers are model-facing, so the schema stays stable across role-prompt edits. |
+| `@deepseek-ai/dsh-tool-vibe-workflow` | `vibe` | `ctx.tools`, `ctx.workflowEngine`, `ctx.systemPrompt`, `a calling Agent (exec.agent parents the cluster children)` | `tool/call`, `tool/result` | - | vibe runs one canned cluster script; only request/answers and the spec prefills are model-facing, so the schema stays stable across role-prompt edits. |
 | `@deepseek-ai/dsh-tool-web` | `web_fetch`, `web_search` | `ctx.tools`, `ctx.web`, `ctx.systemPrompt` | `tool/call`, `tool/result` | - | web_search and web_fetch keep provider selection behind ctx.web so model-visible schemas stay stable across backend swaps. |
 
 <a id="deepseek-aidsh-tool-ask-user"></a>
@@ -1835,6 +1835,8 @@ Run the fixed agent-cluster workflow (the vibe mode default): the product manage
 
 When the run returns "needs-input", ask the user the listed openQuestions, then re-run the vibe tool with those answers in the "answers" parameter instead of starting over.
 
+Spec mode prefill: after a user-led design discussion, pass the confirmed artifacts so the cluster skips the matching phases and executes in one pass — "requirements" (a requirements archive: title, goal, requirements, assumptions) skips the product manager, "design" (a technical design whose modules each carry id, title, layer, tasks, acceptance) skips the architect, and "styleGuide" skips the UI designer. The engineers, test engineer, and escalation still run.
+
 ```json
 {
   "type": "object",
@@ -1847,6 +1849,21 @@ When the run returns "needs-input", ask the user the listed openQuestions, then 
       "type": "object",
       "description": "Optional user decisions answering a previous run's openQuestions; re-run with them instead of starting over.",
       "additionalProperties": true
+    },
+    "requirements": {
+      "type": "object",
+      "description": "Spec-mode prefill: a confirmed requirements archive; skips the product manager phase.",
+      "additionalProperties": true
+    },
+    "design": {
+      "type": "object",
+      "description": "Spec-mode prefill: a confirmed module-level technical design; skips the architect phase.",
+      "additionalProperties": true
+    },
+    "styleGuide": {
+      "type": "object",
+      "description": "Spec-mode prefill: a confirmed style guide; skips the UI designer phase.",
+      "additionalProperties": true
     }
   },
   "required": [
@@ -1857,7 +1874,7 @@ When the run returns "needs-input", ask the user the listed openQuestions, then 
 
 Source: [`packages/workflow/tool-vibe-workflow/src/index.ts`](../packages/workflow/tool-vibe-workflow/src/index.ts)
 
-vibe runs one canned cluster script; only request/answers are model-facing, so the schema stays stable across role-prompt edits.
+vibe runs one canned cluster script; only request/answers and the spec prefills are model-facing, so the schema stays stable across role-prompt edits.
 
 <a id="deepseek-aidsh-tool-web"></a>
 

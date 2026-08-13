@@ -6,7 +6,7 @@ The model-facing **`vibe` tool**: run the fixed agent-cluster workflow — the v
 
 ## What the model sees
 
-Two parameters: `request` (required — the user request or implementation goal the cluster works on) and `answers` (optional — user decisions answering a previous run's `openQuestions`, so a needs-input run can resume instead of starting over). The plugin also contributes a `tool:<toolName>` system-prompt section carrying the usage policy — use the `vibe` tool in vibe mode or when the user asks for the fixed agent-cluster workflow; when the run returns "needs-input", ask the user and re-run with the answers — per the convention that tool guidance ships with the tool plugin, never in the deployment persona.
+Five parameters: `request` (required — the user request or implementation goal the cluster works on), `answers` (optional — user decisions answering a previous run's `openQuestions`, so a needs-input run can resume instead of starting over), and the spec-mode prefills `requirements` (a confirmed requirements archive that skips the product manager), `design` (a confirmed module-level technical design that skips the architect), and `styleGuide` (a confirmed style guide that skips the UI designer) — after a user-led design discussion, prefilling all three makes the cluster execute the whole delivery in one pass. The plugin also contributes a `tool:<toolName>` system-prompt section carrying the usage policy — use the `vibe` tool in vibe mode or when the user asks for the fixed agent-cluster workflow; when the run returns "needs-input", ask the user and re-run with the answers — per the convention that tool guidance ships with the tool plugin, never in the deployment persona.
 
 The run's canonical value is the cluster summary: `stage` (`done`, `needs-input`, or `failed`), the requirements archive, the style guide, the architecture, the per-module engineer reports, the test report, and the escalation record when the test engineer found issues.
 
@@ -80,4 +80,5 @@ Append-only; newly visible content follows the reusable request prefix and does 
 - **The parent turn blocks until the whole cluster settles** — there is no background start/poll API, and cancellation discards partial output as an error.
 - **One escalation round** — the cluster fixes and re-verifies once; a second round of issues remains in the verification report for the calling agent to act on.
 - **Children may not reach the user** — the cluster routes user decisions through the calling agent: open questions surface as `needs-input` and the caller re-runs with answers; a child that has the `ask_user` tool may ask directly.
+- **Prefills are trusted, not re-validated** — a spec-mode `design` prefill must carry the module shape (`modules` with `id`/`title`/`layer`/`tasks`/`acceptance`); the script fails loud when the modules array is missing.
 - **Engine and provider caps apply** — module fan-out is bounded by the workflow engine's concurrency and total-agent caps.

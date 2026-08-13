@@ -75,7 +75,7 @@ describe('ui-mode-switcher apply', () => {
     await ctx.plugin({ inject: [...inject], apply }).await()
 
     const options = await commandUi.registered[0]!.ui.options(session)
-    expect(options.map(option => option.id)).toEqual(['standard', 'creative', 'design', 'vibe'])
+    expect(options.map(option => option.id)).toEqual(['standard', 'creative', 'design', 'vibe', 'spec'])
     expect(options.find(option => option.id === 'creative')).toMatchObject({ active: true })
     expect(options.find(option => option.id === 'standard')).not.toHaveProperty('active')
   })

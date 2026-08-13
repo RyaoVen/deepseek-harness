@@ -2650,7 +2650,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'AgentMode',
-    declaration: 'export type AgentMode = \'standard\' | \'creative\' | \'design\' | \'vibe\';',
+    declaration: 'export type AgentMode = \'standard\' | \'creative\' | \'design\' | \'vibe\' | \'spec\';',
   },
   {
     name: 'AgentOptions',

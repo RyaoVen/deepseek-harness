@@ -132,6 +132,18 @@ describe('dsh-tool-vibe-workflow', () => {
     await pending
   })
 
+  it('forwards spec-mode prefills to the script args', async () => {
+    const { ctx, engine, parent } = await setup()
+    const requirements = { title: 't', goal: 'g', requirements: [], assumptions: [], openQuestions: [] }
+    const design = { techStack: [], architecture: 'a', modules: [], process: 'p', risks: [] }
+    const styleGuide = { stylePrinciples: [], colors: {}, typography: '', spacing: '', motion: '', animationStyle: '', components: [] }
+    const pending = execute(ctx, { request: 'build a todo app', requirements, design, styleGuide }, parent)
+    await vi.waitFor(() => { expect(engine.requests).toHaveLength(1) })
+    expect(engine.requests[0]!.args).toEqual({ request: 'build a todo app', requirements, design, styleGuide })
+    engine.settleRun('run-1', { value: DONE_VALUE, stopReason: 'completed', agentsStarted: 4 })
+    await pending
+  })
+
   it('maps a non-completed stop reason to an isError result', async () => {
     const { ctx, engine, parent } = await setup()
     const pending = execute(ctx, { request: 'build a todo app' }, parent)
@@ -167,6 +179,11 @@ describe('dsh-tool-vibe-workflow', () => {
     for (const role of ['PRODUCT MANAGER', 'UI DESIGNER', 'ARCHITECT', 'ENGINEER', 'TEST ENGINEER']) {
       expect(VIBE_WORKFLOW_SCRIPT).toContain(role)
     }
+    // Spec-mode prefills skip the matching phases instead of running them.
+    expect(VIBE_WORKFLOW_SCRIPT).toContain('prefillRequirements')
+    expect(VIBE_WORKFLOW_SCRIPT).toContain('prefillDesign')
+    expect(VIBE_WORKFLOW_SCRIPT).toContain('prefillStyleGuide')
+    expect(VIBE_WORKFLOW_SCRIPT).toContain('designJobs')
     expect(VIBE_WORKFLOW_SCRIPT).not.toContain('${')
     expect(VIBE_WORKFLOW_SCRIPT).not.toContain('`')
   })

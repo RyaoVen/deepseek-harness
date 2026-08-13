@@ -15,4 +15,4 @@ None; this package never assembles model input.
 ## Known Limitations and Deferred Work
 
 - **Command-only surface** — no inline mode indicator in the composer yet; the current mode is visible in the popup's active row and in the agent's prompt section.
-- **No per-mode submenus** — the spec mode with options will extend the popup rows as its issue lands.
+- **No per-mode submenus** — every mode is one flat popup row; a mode needing its own options UI would extend the popup contract.

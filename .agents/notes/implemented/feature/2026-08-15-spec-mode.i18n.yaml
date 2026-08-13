@@ -1,6 +1,6 @@
 # Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
-#   pnpm run verify-translation-pairing --write packages/workflow/tool-vibe-workflow/README.md
-README.md: ea3f1e63ba8e5d2eff264da7d9c4a2993bb66413
-README.zh.md: 8481a8617196e7bf49dc484be970e98243b6d933
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-15-spec-mode.md
+2026-08-15-spec-mode.md: 5bbd6b1db6e4045e9f9cf666eae2f96cb953396f
+2026-08-15-spec-mode.zh.md: c59878e96fc6195b702db3df5b61510ea605580a

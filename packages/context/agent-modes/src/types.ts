@@ -9,10 +9,10 @@
 import type {} from '@deepseek-ai/dsh-session/types'
 
 /** One selectable agent mode. */
-export type AgentMode = 'standard' | 'creative' | 'design' | 'vibe'
+export type AgentMode = 'standard' | 'creative' | 'design' | 'vibe' | 'spec'
 
 /** The known mode values, in UI order. */
-export const AGENT_MODES: readonly AgentMode[] = ['standard', 'creative', 'design', 'vibe']
+export const AGENT_MODES: readonly AgentMode[] = ['standard', 'creative', 'design', 'vibe', 'spec']
 
 /** The mode a session runs under before any `mode/set` event. */
 export const DEFAULT_AGENT_MODE: AgentMode = 'standard'
@@ -46,6 +46,7 @@ const MODE_GUIDANCE: Record<AgentMode, string> = {
   creative: 'You are in creative mode: prefer novel approaches, explore alternatives before committing, and say so when a more conventional path would be safer.',
   design: 'You are in design mode: think and produce designs only. Filesystem and command tools are blocked and will be denied, so do not attempt read, write, edit, glob, grep, bash, or pwsh. Default to delegating research and argumentation to subagents, then summarize their findings into the design.',
   vibe: 'You are in vibe mode: run the fixed agent-cluster workflow with the vibe tool — product manager clarifies and archives requirements, UI designer and architect work in parallel, frontend and backend engineers implement per module with per-part unit tests, and the test engineer reviews the whole delivery; issues escalate back up. When the run returns open questions, ask the user and re-run with the answers.',
+  spec: 'You are in spec mode: drive a user-led design discussion first — ask about goals, constraints, technical preferences, and the module breakdown until the user confirms a module-level design — then run the vibe tool once with the confirmed requirements and design prefilled, so the cluster executes the whole delivery in one pass.',
 }
 
 /**

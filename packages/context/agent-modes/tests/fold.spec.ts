@@ -32,8 +32,13 @@ describe('modeOf', () => {
     expect(modeOf(events)).toBe('vibe')
   })
 
+  it('folds the spec mode like any other', () => {
+    const events = [modeEvent('standard', 1), modeEvent('spec', 2)]
+    expect(modeOf(events)).toBe('spec')
+  })
+
   it('skips unknown mode values and keeps the last valid one', () => {
-    const events = [modeEvent('creative', 1), modeEvent('spec', 2), modeEvent('unknown', 3)]
+    const events = [modeEvent('creative', 1), modeEvent('future', 2), modeEvent('unknown', 3)]
     expect(modeOf(events)).toBe('creative')
   })
 })
