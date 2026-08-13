@@ -22,6 +22,11 @@ describe('modeOf', () => {
     expect(modeOf(events)).toBe('creative')
   })
 
+  it('folds the design mode like any other', () => {
+    const events = [modeEvent('standard', 1), modeEvent('design', 2)]
+    expect(modeOf(events)).toBe('design')
+  })
+
   it('skips unknown mode values and keeps the last valid one', () => {
     const events = [modeEvent('creative', 1), modeEvent('vibe', 2), modeEvent('unknown', 3)]
     expect(modeOf(events)).toBe('creative')

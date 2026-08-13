@@ -15,4 +15,4 @@
 ## Known Limitations and Deferred Work
 
 - **仅命令界面** —— 作曲栏尚无内联模式指示器；当前模式在弹出层的活动行与 agent 的提示词段落中可见。
-- **无按模式子菜单** —— 带选项的模式（设计、vibe、spec）将随各自 issue 扩展弹出层行。
+- **无按模式子菜单** —— 带选项的模式（vibe、spec）将随各自 issue 扩展弹出层行。

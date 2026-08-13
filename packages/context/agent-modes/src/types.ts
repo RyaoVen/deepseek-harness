@@ -9,13 +9,16 @@
 import type {} from '@deepseek-ai/dsh-session/types'
 
 /** One selectable agent mode. */
-export type AgentMode = 'standard' | 'creative'
+export type AgentMode = 'standard' | 'creative' | 'design'
 
 /** The known mode values, in UI order. */
-export const AGENT_MODES: readonly AgentMode[] = ['standard', 'creative']
+export const AGENT_MODES: readonly AgentMode[] = ['standard', 'creative', 'design']
 
 /** The mode a session runs under before any `mode/set` event. */
 export const DEFAULT_AGENT_MODE: AgentMode = 'standard'
+
+/** The design mode value: think and produce designs only, no I/O. */
+export const DESIGN_MODE: AgentMode = 'design'
 
 declare module '@deepseek-ai/dsh-session' {
   interface SessionEventMap {
@@ -41,6 +44,7 @@ export function isAgentMode(value: unknown): value is AgentMode {
 const MODE_GUIDANCE: Record<AgentMode, string> = {
   standard: 'You are in standard mode: follow the request directly with the default working style.',
   creative: 'You are in creative mode: prefer novel approaches, explore alternatives before committing, and say so when a more conventional path would be safer.',
+  design: 'You are in design mode: think and produce designs only. Filesystem and command tools are blocked and will be denied, so do not attempt read, write, edit, glob, grep, bash, or pwsh. Default to delegating research and argumentation to subagents, then summarize their findings into the design.',
 }
 
 /**

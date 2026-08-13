@@ -637,7 +637,7 @@ get(session: Session): AgentMode
 set(session: Session, mode: AgentMode): number
 ```
 
-Source: [`packages/context/agent-modes/src/index.ts:26`](../../packages/context/agent-modes/src/index.ts)
+Source: [`packages/context/agent-modes/src/index.ts:28`](../../packages/context/agent-modes/src/index.ts)
 
 <a id="ctxsessions--sessionstore"></a>
 

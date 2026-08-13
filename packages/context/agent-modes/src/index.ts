@@ -11,9 +11,11 @@ import { TypertRemoteService, Remote } from '@deepseek-ai/dsh-typert-protocol'
 // Typert-generated ./typert and ./remote artifacts import Zod at runtime.
 import type {} from 'zod'
 import { modeOf } from './fold.ts'
+import * as designModeGuard from './guard.ts'
 import { MODE_SET_EVENT, type AgentMode } from './types.ts'
 
 export type * from './types.ts'
+export { DESIGN_BLOCKED_TOOLS, designModeDenial } from './guard.ts'
 
 declare module '@deepseek-ai/cordis' {
   interface Context {
@@ -86,8 +88,9 @@ export class SessionModesGateway extends TypertRemoteService {
   }
 }
 
-/** Cordis plugin body: register the mode service and its Remote. */
+/** Cordis plugin body: register the mode service, its Remote, and the design-mode tool guard. */
 export function apply(ctx: Context): void {
   ctx.plugin(SessionModes)
   ctx.plugin(SessionModesGateway)
+  ctx.plugin(designModeGuard)
 }
