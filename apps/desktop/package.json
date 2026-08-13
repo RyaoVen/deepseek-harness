@@ -1,0 +1,53 @@
+{
+  "name": "@deepseek-ai/dsh-desktop",
+  "description": "Desktop shell: runs `dsh --profile web` and shows the Web GUI in a native window.",
+  "version": "0.1.0-rc.6",
+  "type": "module",
+  "main": "main.js",
+  "files": [
+    "main.js",
+    "README.md",
+    "README.zh.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "directory": "apps/desktop"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "^43.4.0",
+    "electron-builder": "^26.15.3",
+    "tsx": "^4.19.0"
+  },
+  "build": {
+    "appId": "com.deepseek.harness.desktop",
+    "productName": "DeepSeek Harness",
+    "files": [
+      "main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/@deepseek-ai/dsh",
+        "to": "dsh-cli"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
