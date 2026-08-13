@@ -139,6 +139,9 @@ const BUILTIN_INSPECT_TOKENS: readonly ThemeTokenInspection[] = Object.freeze([
   { name: '--dsw-alias-state-error-primary', description: 'Primary error state color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-state-error-primary' },
   { name: '--dsw-alias-state-success-primary', description: 'Primary success state color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-state-success-primary' },
   { name: '--dsw-alias-state-warn-primary', description: 'Primary warning state color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-state-warn-primary' },
+  { name: '--dsw-alias-surface-glass', description: 'Glassmorphism panel fill (translucent, for backdrop blur).', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-surface-glass' },
+  { name: '--dsw-alias-border-glass', description: 'Glassmorphism panel border.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-border-glass' },
+  { name: '--dsw-alias-gradient-brand', description: 'Brand gradient for accent surfaces.', valueType: 'CSS gradient', requiresLightAndDark: true, cssVariable: '--dsw-alias-gradient-brand' },
   { name: '--dsw-specific-sidebar-fill', description: 'Sidebar column and title-row background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-specific-sidebar-fill' },
 ])
 

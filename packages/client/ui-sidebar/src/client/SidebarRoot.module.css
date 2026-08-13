@@ -13,7 +13,12 @@
   height: 100%;
   padding: 6px var(--dsh-sidebar-inline-padding);
   box-sizing: border-box;
-  background: var(--dsw-specific-sidebar-fill);
+  /* Glassmorphism panel: translucent fill + backdrop blur over the app
+     surface; motion.css leaves backdrop-filter untouched under reduced
+     motion (it is not an animation). */
+  background: var(--dsw-alias-surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   color: var(--dsw-alias-label-primary);
   font-size: 14px;
   /* The sidebar is elevated above the conversation surface, so a revealed

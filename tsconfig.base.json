@@ -210,6 +210,7 @@
       "@deepseek-ai/dsh-client-ui-settings-plugins": ["./packages/client/ui-settings-plugins/src"],
       "@deepseek-ai/dsh-client-ui-usage-dashboard": ["./packages/client/ui-usage-dashboard/src"],
       "@deepseek-ai/dsh-client-ui-mode-switcher": ["./packages/client/ui-mode-switcher/src"],
+      "@deepseek-ai/dsh-client-ui-desktop-decoration": ["./packages/client/ui-desktop-decoration/src"],
       // The agent-modes types subpath (`@deepseek-ai/dsh-agent-modes/types`) and
       // the agent-plane entry (`@deepseek-ai/dsh-agent-modes/agent`) prefix-match
       // this entry; the generic wildcard cannot map them.

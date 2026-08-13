@@ -6,6 +6,11 @@
   "main": "main.js",
   "files": [
     "main.js",
+    "preload.js",
+    "decor-preload.js",
+    "decor.html",
+    "decor.css",
+    "decor.js",
     "README.md",
     "README.zh.md"
   ],
@@ -34,6 +39,11 @@
     "productName": "DeepSeek Harness",
     "files": [
       "main.js",
+      "preload.js",
+      "decor-preload.js",
+      "decor.html",
+      "decor.css",
+      "decor.js",
       "package.json"
     ],
     "extraResources": [
