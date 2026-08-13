@@ -19,7 +19,7 @@ import { en, zh, type ModeSwitcherLocaleKey } from './locales.ts'
 export type { ModeSwitcherLocaleKey } from './locales.ts'
 
 /** The known mode values, in UI order. Spelled here: a client bundle must not value-import a Host package. */
-const AGENT_MODES: readonly AgentMode[] = ['standard', 'creative', 'design']
+const AGENT_MODES: readonly AgentMode[] = ['standard', 'creative', 'design', 'vibe']
 
 /** Dictionary namespace owned by this plugin. */
 export const NS = 'modeSwitcher'

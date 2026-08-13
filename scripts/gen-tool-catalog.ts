@@ -63,6 +63,7 @@ import * as ToolWeb from '@deepseek-ai/dsh-tool-web'
 import VmWorkflowEngine from '@deepseek-ai/dsh-workflow-worker-thread'
 import * as ToolRalph from '@deepseek-ai/dsh-tool-ralph'
 import * as ToolWorkflow from '@deepseek-ai/dsh-tool-workflow'
+import * as ToolVibeWorkflow from '@deepseek-ai/dsh-tool-vibe-workflow'
 import { githubSlug } from './verify-md-links.ts'
 
 /** Attachment seam marker that makes the attachments-conditional `read_image` schema harvestable. */
@@ -533,6 +534,24 @@ const TOOL_PACKAGES: ToolPackage[] = [
       await ctx.plugin(VmWorkflowEngine, { provider: 'mock' })
       await ctx.plugin(ToolWorkflow)
     },
+  },
+  {
+    pkg: '@deepseek-ai/dsh-tool-vibe-workflow',
+    dir: 'tool-vibe-workflow',
+    source: 'packages/workflow/tool-vibe-workflow/src/index.ts',
+    requires: ['ctx.tools', 'ctx.workflowEngine', 'ctx.systemPrompt', 'a calling Agent (exec.agent parents the cluster children)'],
+    writes: ['tool/call', 'tool/result'],
+    async mount(ctx) {
+      // The tool injects `workflows`; boot the vm engine over a scripted
+      // subagent provider to satisfy it. The schema does not depend on which
+      // provider backs the engine.
+      await ctx.plugin(SubagentRuntime)
+      registerCatalogSubagentProvider(ctx, 'mock')
+      await ctx.plugin(VmWorkflowEngine, { provider: 'mock' })
+      await ctx.plugin(ToolVibeWorkflow)
+    },
+    note:
+      'vibe runs one canned cluster script; only request/answers are model-facing, so the schema stays stable across role-prompt edits.',
   },
   {
     pkg: '@deepseek-ai/dsh-tool-web',

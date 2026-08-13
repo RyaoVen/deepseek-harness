@@ -40,6 +40,7 @@
 | `@deepseek-ai/dsh-tool-jobs` | `job_kill`、`job_list`、`job_output` | `ctx.tools`、`ctx.jobs`、`ctx.systemPrompt` | `tool/call`、`tool/result`、`user/message via agent.inject() for background completion notices` | - | 与任务种类无关的后台任务控制器：后台 bash 命令、PTY 发送和 subagent 都通过相同的 3 个工具读取、列出和终止。加载该插件会挂接控制器，从而启用生产方的 `ctx.jobs.start()`。 |
 | `@deepseek-ai/dsh-tool-todo` | `todo_write` | `ctx.tools`、`owning Agent session` | `tool/call`、`todo/write`、`tool/result` | - | todo_write 是会话所有的状态；UI 将最新的 todo/write 事件渲染为检查清单。`allowParallelInProgress` 是没有默认值的必填项，因此本目录明确选择 `true`，对应描述允许同时存在多个 `in_progress` 项。选择 `false` 的部署会获得同一工具，但描述会要求只能有 1 个活动任务。 |
 | `@deepseek-ai/dsh-tool-workflow` | `workflow` | `ctx.tools`、`ctx.workflowEngine`、`ctx.systemPrompt`、`a calling Agent (exec.agent parents the script children)` | `tool/call`、`tool/result` | - | - |
+| `@deepseek-ai/dsh-tool-vibe-workflow` | `vibe` | `ctx.tools`、`ctx.workflowEngine`、`ctx.systemPrompt`、`a calling Agent (exec.agent parents the cluster children)` | `tool/call`、`tool/result` | - | vibe 运行一个 canned 集群脚本；只有 request/answers 对模型可见，因此 schema 在角色提示词修改间保持稳定。 |
 | `@deepseek-ai/dsh-tool-web` | `web_fetch`、`web_search` | `ctx.tools`、`ctx.web`、`ctx.systemPrompt` | `tool/call`、`tool/result` | - | web_search 和 web_fetch 将提供方选择置于 ctx.web 之后，使模型可见 schema 在更换后端时保持稳定。 |
 
 <a id="deepseek-aidsh-tool-ask-user"></a>
@@ -1828,6 +1829,40 @@ todo_write 是会话所有的状态；UI 将最新的 todo/write 事件渲染为
 ```
 
 来源：[`packages/workflow/tool-workflow/src/index.ts`](../packages/workflow/tool-workflow/src/index.ts)
+
+<a id="deepseek-aidsh-tool-vibe-workflow"></a>
+
+## `@deepseek-ai/dsh-tool-vibe-workflow`
+
+### `vibe`
+
+运行固定 agent 集群工作流（vibe 模式默认）：产品经理澄清请求并整理需求档案，UI 设计师与架构师并行开工，前端与后端工程师按架构师模块分 part 实现并逐 part 写单元测试（架构师可按模块派生多个工程师实例），测试工程师全盘 review 交付物并运行测试。测试工程师报告的问题逐级反上报：架构师分派修复，工程师应用，测试工程师验证。
+
+当运行返回 "needs-input" 时，向用户询问列出的 openQuestions，然后用 "answers" 参数携带这些答案重跑 vibe 工具，而不是从头开始。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "request": {
+      "type": "string",
+      "description": "The user request or implementation goal the cluster works on."
+    },
+    "answers": {
+      "type": "object",
+      "description": "Optional user decisions answering a previous run's openQuestions; re-run with them instead of starting over.",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "request"
+  ]
+}
+```
+
+来源：[`packages/workflow/tool-vibe-workflow/src/index.ts`](../packages/workflow/tool-vibe-workflow/src/index.ts)
+
+vibe 运行一个 canned 集群脚本；只有 request/answers 对模型可见，因此 schema 在角色提示词修改间保持稳定。
 
 <a id="deepseek-aidsh-tool-web"></a>
 

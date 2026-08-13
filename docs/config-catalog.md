@@ -2741,6 +2741,24 @@ export interface Config {
 
 Source: [`packages/todo/tool-todo/src/index.ts:29`](../packages/todo/tool-todo/src/index.ts)
 
+<a id="deepseek-aidsh-tool-vibe-workflow"></a>
+
+## `@deepseek-ai/dsh-tool-vibe-workflow`
+
+Requires: `tools` · `workflowEngine` · `systemPrompt`
+
+```ts config-catalog
+/** Config: the model-facing tool name plus result rendering caps. */
+export interface Config {
+  /** The model-facing tool name to register (default `vibe`). */
+  toolName?: string
+  /** Rendered-result ceiling, in characters: a longer JSON value is truncated with a notice (default 50000). */
+  maxResultChars?: number
+}
+```
+
+Source: [`packages/workflow/tool-vibe-workflow/src/index.ts:33`](../packages/workflow/tool-vibe-workflow/src/index.ts)
+
 <a id="deepseek-aidsh-tool-web"></a>
 
 ## `@deepseek-ai/dsh-tool-web`
