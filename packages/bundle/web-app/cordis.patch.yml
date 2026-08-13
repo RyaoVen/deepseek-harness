@@ -102,6 +102,12 @@
     - id: cordis-host-runner
       name: '@deepseek-ai/dsh-cordis-host-runner'
 
+    # The extensions center: mounts MCP servers and skills live from the
+    # `extensions-center` settings section, which the browser half edits in
+    # the Plugins settings page.
+    - id: extensions-center
+      name: '@deepseek-ai/dsh-extensions-center'
+
     # Ordinary provider for the parsed Web flags. Its plugin-level injection
     # waits for cmdlineArgs; no launcher metadata or special row kind is needed.
     - id: web-startup
@@ -262,6 +268,11 @@
     # cards. A namespace this deployment does not expose renders nothing.
     - id: ui-settings-plugins
       name: '@deepseek-ai/dsh-client-ui-settings-plugins'
+
+    # Extensions center: the MCP server and skill management tab inside the
+    # Plugins settings page.
+    - id: extensions-center
+      name: '@deepseek-ai/dsh-extensions-center'
 
     # Plan control: the composer plan seat over the plan projection + /plan channel.
     - id: ui-plan

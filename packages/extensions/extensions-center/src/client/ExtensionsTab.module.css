@@ -1,0 +1,210 @@
+/* Extensions tab: two editable groups of MCP server and skill entries. */
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 760px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.intro {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.failed,
+.readOnly {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.failed {
+  border: 1px solid var(--dsw-alias-state-error-secondary);
+  color: var(--dsw-alias-state-error-primary);
+  background: var(--dsw-alias-interactive-bg-hover-danger);
+}
+
+.readOnly {
+  border: 1px solid var(--dsw-alias-border-l2);
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.entry {
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rowName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rowMeta {
+  font-size: 12px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.rowAction {
+  margin-left: auto;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  padding: 4px 10px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.rowAction + .rowAction {
+  margin-left: 6px;
+}
+
+.rowAction:hover:not(:disabled) {
+  border-color: var(--dsw-alias-state-business-primary);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.rowAction:disabled,
+.add:disabled,
+.primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.add {
+  align-self: flex-start;
+  border: 1px dashed var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.add:hover:not(:disabled) {
+  border-color: var(--dsw-alias-state-business-primary);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.formWrap {
+  margin-top: 10px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.field input,
+.field textarea,
+.field select {
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: var(--dsw-alias-bg-layer-3);
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 13px;
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible,
+.field select:focus-visible {
+  outline: 2px solid var(--dsw-alias-state-business-primary);
+  outline-offset: 1px;
+}
+
+.field input:disabled,
+.field textarea:disabled,
+.field select:disabled {
+  opacity: 0.6;
+}
+
+.field small {
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.primary {
+  border: 1px solid var(--dsw-alias-button-primary-fill);
+  border-radius: 6px;
+  padding: 6px 14px;
+  background: var(--dsw-alias-button-primary-fill);
+  color: var(--dsw-alias-label-primary-foreground);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.actions button[type='button'] {
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  padding: 6px 14px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}

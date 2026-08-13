@@ -585,6 +585,23 @@ export interface Config {
 
 Source: [`packages/e2b/e2b/src/index.ts:43`](../packages/e2b/e2b/src/index.ts)
 
+<a id="deepseek-aidsh-extensions-center"></a>
+
+## `@deepseek-ai/dsh-extensions-center`
+
+```ts config-catalog
+/** Local filesystem skill provider configuration. */
+export interface Config {
+  /**
+   * Directory rendered skill files land in. Defaults to `$DSH_HOME/skills`,
+   * the user-dsh root every default skill-filesystem provider scans.
+   */
+  skillsDir?: string
+}
+```
+
+Source: [`packages/extensions/extensions-center/src/index.ts:32`](../packages/extensions/extensions-center/src/index.ts)
+
 <a id="deepseek-aidsh-fs-local"></a>
 
 ## `@deepseek-ai/dsh-fs-local`
