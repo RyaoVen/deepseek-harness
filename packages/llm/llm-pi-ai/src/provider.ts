@@ -7,9 +7,11 @@
  * with its models replaced — the catalog provider owns API implementations this
  * package cannot reconstruct (Bedrock loads its Smithy module through a
  * separate entry point), so rebuilding it from parts would silently narrow
- * which providers work. Every other route — one pi-ai has never heard of, or a
- * catalog route pointed at a different protocol — is built by `createProvider`
- * over the protocol table below.
+ * which providers work. Every other single-protocol route — one pi-ai has
+ * never heard of, or a catalog route pointed at a different protocol — is
+ * built by `createProvider` over the protocol table below. A route with
+ * per-model protocol repoints mixes protocols and dispatches each request on
+ * the model's own `api` instead.
  *
  * Credentials never reach this module's storage: the harness resolves a route's
  * key through `ctx.credentials` before the request enters pi-ai and hands it
@@ -21,46 +23,8 @@
 
 import { createProvider } from '@earendil-works/pi-ai'
 import type { Api, ApiKeyAuth, Model, Provider, ProviderStreams } from '@earendil-works/pi-ai'
-import { anthropicMessagesApi } from '@earendil-works/pi-ai/api/anthropic-messages.lazy'
-import { openAICompletionsApi } from '@earendil-works/pi-ai/api/openai-completions.lazy'
-import { openAIResponsesApi } from '@earendil-works/pi-ai/api/openai-responses.lazy'
+import { protocolFactory, supportedProtocols } from './protocols.ts'
 import { catalogProvider } from './catalog.ts'
-
-/**
- * Wire protocols a configured route may name, mapped to pi-ai's lazily loaded
- * implementations. Each entry is the factory that pi-ai's matching provider
- * factory uses, so a hand-declared route reaches exactly the implementation a
- * catalog route would.
- *
- * The table is deliberately narrow: the protocols a hand-declared route
- * actually reaches for today, each completely describable with a key, an
- * endpoint, and headers. Bedrock signs with SigV4 over AWS credentials and a
- * region, Vertex needs a project, a location, and application-default
- * credentials, Azure needs provider environment plus an api-version, and Codex
- * authenticates through OAuth — none of which this configuration shape can
- * express, so offering them would hand back a provider that cannot
- * authenticate. The remainder are absent for want of a consumer rather than a
- * blocker: each is one line here once a deployment needs it. Catalog routes
- * still reach every protocol through their own provider; only an explicit
- * override is refused.
- */
-const PROTOCOLS: Readonly<Record<string, () => ProviderStreams>> = {
-  'openai-completions': openAICompletionsApi,
-  'openai-responses': openAIResponsesApi,
-  'anthropic-messages': anthropicMessagesApi,
-}
-
-/**
- * Every wire protocol a configured route may name, most-reached first. The
- * order is the table's and therefore stable; a configuration surface offering
- * a choice presents the first as its default, which is why the protocol a
- * hand-declared gateway most often speaks — and the one endpoint interrogation
- * can read — leads.
- * @returns the supported protocol identifiers.
- */
-export function supportedProtocols(): readonly string[] {
-  return Object.keys(PROTOCOLS)
-}
 
 /**
  * Api-key auth for a route the harness authenticates itself. `Models` calls
@@ -96,6 +60,13 @@ export interface ProviderSpec {
   baseURL?: string
   /** The route's materialized models, in configuration order. */
   models: readonly Model<Api>[]
+  /**
+   * Whether any model's `api` was set per model and diverges from the protocol
+   * route-level resolution would give it, mixing protocols on the route. Such a
+   * route cannot reuse either single-protocol path and dispatches per model
+   * instead.
+   */
+  repointed: boolean
   /**
    * Whether the profile names a credential, which it does through `apiKeyEnv`
    * alone: configuration carries the reference, never the secret. Only that
@@ -159,6 +130,38 @@ function reuseCatalogProvider(base: Provider, spec: ProviderSpec): Provider {
 }
 
 /**
+ * Build a provider that dispatches each request on the model's own protocol.
+ *
+ * A repointed route mixes protocols per model, and resolution requires every
+ * one of them to be a protocol the table can serve, so dispatch is a table
+ * lookup on `model.api` per request — no model can leave the table's set.
+ * @param spec - the resolved route facts.
+ * @returns the dispatching provider.
+ */
+function buildDispatchingProvider(spec: ProviderSpec): Provider {
+  /** The protocol implementation serving one model, resolved per request. */
+  const impl = (model: Model<Api>): ProviderStreams => {
+    const factory = protocolFactory(model.api)
+    /* v8 ignore next 2 -- unreachable: model resolution requires every model on a repointed route to speak a supported protocol. */
+    if (factory !== undefined) return factory()
+    /* v8 ignore next 4 -- same invariant: no repointed model can leave the protocol table. */
+    throw new Error(
+      `llm-pi-ai: provider "${spec.provider}" model "${model.id}" speaks api "${model.api}", which this build cannot serve;`
+      + ` supported protocols are ${supportedProtocols().join(', ')}`,
+    )
+  }
+  return {
+    id: spec.provider,
+    name: spec.displayName,
+    ...spec.baseURL === undefined ? {} : { baseUrl: spec.baseURL },
+    auth: routeAuth(spec, catalogProvider(spec.provider)),
+    getModels: () => spec.models,
+    stream: (model, context, options) => impl(model).stream(model, context, options),
+    streamSimple: (model, context, options) => impl(model).streamSimple(model, context, options),
+  }
+}
+
+/**
  * Build the pi-ai provider for one resolved route.
  * @param spec - the resolved route facts.
  * @returns the provider to register in the adapter's `Models` collection.
@@ -166,6 +169,9 @@ function reuseCatalogProvider(base: Provider, spec: ProviderSpec): Provider {
  */
 export function buildProvider(spec: ProviderSpec): Provider {
   const catalog = catalogProvider(spec.provider)
+  // A route with per-model protocol repoints dispatches per model; both
+  // single-protocol paths below assume every model carries one protocol.
+  if (spec.repointed) return buildDispatchingProvider(spec)
   // A catalog route keeping its catalog protocol reuses the catalog provider;
   // an explicit protocol means the deployment is repointing the route at a
   // different wire format, which only the protocol table can serve.
@@ -174,7 +180,7 @@ export function buildProvider(spec: ProviderSpec): Provider {
   // Every model on this path carries the route's protocol: model resolution
   // requires one for a route the catalog cannot default, and an explicit one
   // replaces each catalog model's own. So the route has a single API.
-  const factory = spec.api === undefined ? undefined : PROTOCOLS[spec.api]
+  const factory = spec.api === undefined ? undefined : protocolFactory(spec.api)
   if (factory === undefined) {
     throw new Error(
       `llm-pi-ai: provider "${spec.provider}" names api "${spec.api}", which this build cannot serve;`

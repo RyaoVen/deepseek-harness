@@ -37,6 +37,29 @@ describe('reasoning schema boundary', () => {
   })
 })
 
+describe('model api schema boundary', () => {
+  type Materialized = { providers: Record<string, { models?: { api?: unknown }[] }> }
+
+  it('accepts a model api string at the shape boundary', () => {
+    const parsed = configWith({ api: 'anthropic-messages' })() as Materialized
+    expect(parsed.providers['acme-gateway']?.models?.[0]?.api).toBe('anthropic-messages')
+  })
+
+  it('rejects a non-string model api', () => {
+    expect(configWith({ api: 42 })).toThrow()
+  })
+
+  it('leaves unservable spellings to resolution, which names the model', () => {
+    // The schema is shape-only because the no-op spelling — the catalog
+    // model's own api — is only knowable next to the catalog entry; the
+    // namespace validator is what refuses a spelling nothing can serve.
+    expect(configWith({ api: 'quantum-telepathy' })).not.toThrow()
+    expect(() => {
+      assertServiceable(routeWith({ models: [{ id: 'm', api: 'quantum-telepathy' }] })() as Config)
+    }).toThrow(/names api "quantum-telepathy"/)
+  })
+})
+
 describe('modality schema boundary', () => {
   it('rejects a modality pi-ai does not know, at either level', () => {
     expect(configWith({ input: ['audio'] })).toThrow(/expected/)
