@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-13-theme-accent-palettes-and-motion.md
+2026-08-13-theme-accent-palettes-and-motion.md: d60bd2af6e8eacaa3594a754e0642bc9f3e25686
+2026-08-13-theme-accent-palettes-and-motion.zh.md: 7a23b38fdc40172b9489851c5d191c6fbe2ed5aa

@@ -5,24 +5,30 @@ import type {} from '@deepseek-ai/dsh-host-webserver'
 import { settingsNamespace } from '@deepseek-ai/dsh-settings'
 import { injectBootTheme } from './boot-theme.ts'
 import {
-  DEFAULT_PREFERENCE, THEME_SETTINGS_NAMESPACE, ThemeSettingsSchema,
-  type ThemePreference, type ThemeSettings,
+  DEFAULT_ACCENT, DEFAULT_MOTION, DEFAULT_PREFERENCE, THEME_SETTINGS_NAMESPACE, ThemeSettingsSchema,
+  type ThemeAccent, type ThemeMotion, type ThemePreference, type ThemeSettings,
 } from './theme-settings.ts'
 
 export {
-  DEFAULT_PREFERENCE, THEME_PREFERENCE_FIELD, THEME_PREFERENCES, THEME_SETTINGS_NAMESPACE,
-  type ThemePreference, type ThemeSettings,
+  DEFAULT_ACCENT, DEFAULT_MOTION, DEFAULT_PREFERENCE, THEME_ACCENT_FIELD, THEME_ACCENTS,
+  THEME_MOTION_FIELD, THEME_MOTION_LEVELS, THEME_PREFERENCE_FIELD, THEME_PREFERENCES,
+  THEME_SETTINGS_NAMESPACE,
+  type ThemeAccent, type ThemeMotion, type ThemePreference, type ThemeSettings,
 } from './theme-settings.ts'
 
 const THEME_NAMESPACE = settingsNamespace(THEME_SETTINGS_NAMESPACE)
 
-/** Read the registered preference or use the schema default without a settings provider. */
-function readPreference(ctx: Context): ThemePreference {
+/** The registered theme section, or each field's schema default without one. */
+function readThemeSection(ctx: Context): {
+  preference: ThemePreference
+  accent: ThemeAccent
+  motion: ThemeMotion
+} {
   const settings = ctx.get('settings')
-  if (settings === undefined) return DEFAULT_PREFERENCE
+  if (settings === undefined) return { preference: DEFAULT_PREFERENCE, accent: DEFAULT_ACCENT, motion: DEFAULT_MOTION }
   const section = settings.get(THEME_NAMESPACE) as ThemeSettings | undefined
-  if (section === undefined) return DEFAULT_PREFERENCE
-  return section.preference
+  if (section === undefined) return { preference: DEFAULT_PREFERENCE, accent: DEFAULT_ACCENT, motion: DEFAULT_MOTION }
+  return section
 }
 
 /**
@@ -36,7 +42,10 @@ export function apply(ctx: Context): void {
   })
   ctx.inject(['webServer'], (httpCtx) => {
     httpCtx.effect(
-      () => httpCtx.webServer.tapIndex(html => injectBootTheme(html, readPreference(ctx))),
+      () => httpCtx.webServer.tapIndex((html) => {
+        const section = readThemeSection(ctx)
+        return injectBootTheme(html, section.preference, section.accent, section.motion)
+      }),
       'client-ui-theme: initial theme bootstrap',
     )
   })

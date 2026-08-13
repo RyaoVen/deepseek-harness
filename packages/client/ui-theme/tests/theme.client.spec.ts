@@ -30,6 +30,8 @@ describe('ThemeRuntime', () => {
     expect(snapshot.active.id).toBe('light')
     expect(snapshot.active.colorScheme).toBe('light')
     expect(snapshot.themes.map(t => t.id)).toEqual(['light', 'dark'])
+    expect(snapshot.accent).toBe('deepseek')
+    expect(snapshot.motion).toBe('standard')
   })
 
   it('setTheme switches, writes through the scope, republishes, and keeps DOM untouched', () => {
@@ -50,17 +52,62 @@ describe('ThemeRuntime', () => {
 
   it('adopts a published Host section without writing it back', () => {
     const { theme, events, host } = make()
-    host.publish({ status: 'ready', value: { preference: 'dark' }, revision: 1, writable: true })
+    host.publish({
+      status: 'ready',
+      value: { preference: 'dark', accent: 'deepseek', motion: 'standard' },
+      revision: 1,
+      writable: true,
+    })
     expect(theme.getTheme().preference).toBe('dark')
     expect(events).toHaveLength(1)
     expect(host.set).not.toHaveBeenCalled()
-    host.publish({ value: { preference: 'dark' }, revision: 2 })
+    host.publish({ value: { preference: 'dark', accent: 'deepseek', motion: 'standard' }, revision: 2 })
     expect(events).toHaveLength(1)
+  })
+
+  it('setAccent and setMotion switch, write through the scope, and republish', () => {
+    const { theme, events, host } = make()
+    theme.setAccent('violet')
+    expect(theme.getTheme().accent).toBe('violet')
+    expect(host.set).toHaveBeenCalledWith('accent', 'violet')
+    expect(events).toHaveLength(1)
+    theme.setMotion('reduced')
+    expect(theme.getTheme().motion).toBe('reduced')
+    expect(host.set).toHaveBeenCalledWith('motion', 'reduced')
+    expect(events).toHaveLength(2)
+    // Same-value writes are no-ops (no extra events or scope writes).
+    theme.setAccent('violet')
+    theme.setMotion('reduced')
+    expect(events).toHaveLength(2)
+    expect(() => { theme.setAccent('neon') }).toThrow('not offered')
+    expect(() => { theme.setMotion('wavy') }).toThrow('not offered')
+  })
+
+  it('adopts accent and motion from a published section, defaulting absent fields', () => {
+    const { theme, events, host } = make()
+    host.publish({
+      status: 'ready',
+      value: { preference: 'dark', accent: 'teal', motion: 'reduced' },
+      revision: 1,
+      writable: true,
+    })
+    expect(theme.getTheme().accent).toBe('teal')
+    expect(theme.getTheme().motion).toBe('reduced')
+    expect(events).toHaveLength(1)
+    // A partial section — fields stored before these existed — keeps defaults.
+    host.publish({ value: { preference: 'dark' } as ThemeSettings, revision: 2 })
+    expect(theme.getTheme().accent).toBe('deepseek')
+    expect(theme.getTheme().motion).toBe('standard')
   })
 
   it('adopts a section already standing at construction', () => {
     const host = stubSettingsScope<ThemeSettings>()
-    host.publish({ status: 'ready', value: { preference: 'dark' }, revision: 1, writable: true })
+    host.publish({
+      status: 'ready',
+      value: { preference: 'dark', accent: 'deepseek', motion: 'standard' },
+      revision: 1,
+      writable: true,
+    })
     const { theme } = make(host)
     expect(theme.getTheme().preference).toBe('dark')
   })

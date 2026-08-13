@@ -112,17 +112,27 @@ describe('ui-theme apply', () => {
     const theme = b.ctx.get('theme') as ThemeRuntime
     // An event ahead of any inject hits the unbound-actions arm.
     theme.setTheme('dark')
+    theme.setAccent('violet')
+    theme.setMotion('reduced')
 
     const { instance, face } = faceOf(b.slots)
     // The inject-time re-sync sealed the init window: the mirror is current.
     expect(instance.getSnapshot().preference).toBe('dark')
+    expect(instance.getSnapshot().accent).toBe('violet')
+    expect(instance.getSnapshot().motion).toBe('reduced')
     // Copy rides the standard locale seat: the entry declares the namespace.
     expect(b.slots.entries(SLOT).find(e => e.component === AppearanceRow)!.locale).toBe(SETTINGS_NS)
 
     face.setTheme('system')
     expect(theme.getTheme().preference).toBe('system')
     expect(instance.getSnapshot().preference).toBe('system')
-    await vi.waitFor(() => { expect(b.mutate).toHaveBeenCalledTimes(2) })
+    face.setAccent('teal')
+    expect(theme.getTheme().accent).toBe('teal')
+    expect(instance.getSnapshot().accent).toBe('teal')
+    face.setMotion('standard')
+    expect(theme.getTheme().motion).toBe('standard')
+    expect(instance.getSnapshot().motion).toBe('standard')
+    await vi.waitFor(() => { expect(b.mutate).toHaveBeenCalledTimes(6) })
   })
 
   it('loads Host settings at boot, refreshes its namespace, and keeps remote browsers process-local', async () => {

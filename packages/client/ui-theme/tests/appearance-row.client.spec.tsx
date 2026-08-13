@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-/** AppearanceRow behavior: three cubes, selection follows the persisted
- * preference, clicks drive setTheme. */
+/** AppearanceRow behavior: three cubes, accent swatches, motion cubes;
+ * selection follows the persisted store mirror, clicks drive the injected
+ * writes. */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createSnapshotStore, type SessionListState, type WorkspaceListState } from '@deepseek-ai/dsh-client-runtime/client'
@@ -17,6 +18,17 @@ const COPY: Record<string, string> = {
   'appearance.light': 'Light',
   'appearance.dark': 'Dark',
   'appearance.system': 'System',
+  'appearance.accent': 'Accent',
+  'appearance.accent.deepseek': 'Deep Blue',
+  'appearance.accent.teal': 'Teal',
+  'appearance.accent.violet': 'Violet',
+  'appearance.accent.rose': 'Rose',
+  'appearance.accent.amber': 'Amber',
+  'appearance.accent.emerald': 'Emerald',
+  'appearance.accent.graphite': 'Graphite',
+  'appearance.motion': 'Motion',
+  'appearance.motion.standard': 'Standard',
+  'appearance.motion.reduced': 'Reduced',
 }
 
 /** Empty global standard-kit hooks (the row reads neither). */
@@ -36,8 +48,10 @@ function emptyWorkspaces() {
 function mount(preference: ThemePreference = 'system') {
   // Real store instance — the sanctioned zero-machinery path for tests.
   const store = createAppearanceRowStore().create()
-  store.actions.sync(preference, 0)
+  store.actions.sync(preference, 'deepseek', 'standard', 0)
   const setTheme = vi.fn()
+  const setAccent = vi.fn()
+  const setMotion = vi.fn()
   const props: AppearanceRowComponentProps = {
     useSessions: emptySessions(),
     useWorkspaces: emptyWorkspaces(),
@@ -45,9 +59,11 @@ function mount(preference: ThemePreference = 'system') {
     actions: store.actions,
     t: (key: string) => COPY[key] ?? key,
     setTheme,
+    setAccent,
+    setMotion,
   }
   render(<AppearanceRow {...props} />)
-  return { store, setTheme }
+  return { store, setTheme, setAccent, setMotion }
 }
 
 const pressed = (name: RegExp): string | null =>
@@ -68,8 +84,34 @@ describe('AppearanceRow', () => {
     expect(b.setTheme).toHaveBeenCalledWith('light')
     // No store write yet: selection is unchanged.
     expect(pressed(/Dark/)).toBe('true')
-    act(() => { b.store.actions.sync('light', 1) })
+    act(() => { b.store.actions.sync('light', 'deepseek', 'standard', 1) })
     expect(pressed(/Light/)).toBe('true')
     expect(pressed(/Dark/)).toBe('false')
+  })
+
+  it('offers every accent palette and drives setAccent from the swatches', () => {
+    const b = mount('dark')
+    // One labelled swatch per offered palette.
+    for (const label of ['Deep Blue', 'Teal', 'Violet', 'Rose', 'Amber', 'Emerald', 'Graphite']) {
+      expect(screen.getByRole('button', { name: label })).toBeDefined()
+    }
+    expect(pressed(/Deep Blue/)).toBe('true')
+    fireEvent.click(screen.getByRole('button', { name: /Teal/ }))
+    expect(b.setAccent).toHaveBeenCalledWith('teal')
+    // Selection still follows the store mirror.
+    expect(pressed(/Deep Blue/)).toBe('true')
+    act(() => { b.store.actions.sync('dark', 'teal', 'standard', 1) })
+    expect(pressed(/Teal/)).toBe('true')
+    expect(pressed(/Deep Blue/)).toBe('false')
+  })
+
+  it('offers the two motion levels and drives setMotion', () => {
+    const b = mount('dark')
+    expect(pressed(/Standard/)).toBe('true')
+    expect(pressed(/Reduced/)).toBe('false')
+    fireEvent.click(screen.getByRole('button', { name: /Reduced/ }))
+    expect(b.setMotion).toHaveBeenCalledWith('reduced')
+    act(() => { b.store.actions.sync('dark', 'deepseek', 'reduced', 1) })
+    expect(pressed(/Reduced/)).toBe('true')
   })
 })
