@@ -1,0 +1,242 @@
+/* Usage dashboard: four chart cards over the folded usage summary. */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 860px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.intro {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.refresh {
+  align-self: flex-start;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  padding: 5px 14px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.refresh:hover:not(:disabled) {
+  border-color: var(--dsw-alias-state-business-primary);
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.refresh:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.status {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.failed {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--dsw-alias-state-error-secondary);
+  border-radius: 6px;
+  color: var(--dsw-alias-state-error-primary);
+  background: var(--dsw-alias-interactive-bg-hover-danger);
+  font-size: 13px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 10px;
+}
+
+.cardHeading {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cardIntro {
+  margin: 0;
+  font-size: 12px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.chart {
+  display: block;
+  max-width: 100%;
+}
+
+.axisLabel {
+  font-size: 9px;
+  fill: var(--dsw-alias-label-tertiary);
+}
+
+.heatCell {
+  fill: var(--dsw-alias-state-business-primary);
+}
+
+.heatEmpty {
+  fill: var(--dsw-alias-bg-layer-2);
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.legendRow .heatCell {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.legendLess {
+  margin-right: 6px;
+}
+
+.radarRing {
+  fill: none;
+  stroke: var(--dsw-alias-border-l2);
+  stroke-width: 1;
+}
+
+.radarAxis {
+  stroke: var(--dsw-alias-border-l2);
+  stroke-width: 1;
+}
+
+.series0 {
+  fill: var(--dsw-alias-state-business-primary);
+  stroke: var(--dsw-alias-state-business-primary);
+  stroke-width: 1.5;
+}
+
+.series1 {
+  fill: var(--dsw-alias-state-warn-primary);
+  stroke: var(--dsw-alias-state-warn-primary);
+  stroke-width: 1.5;
+}
+
+.series2 {
+  fill: var(--dsw-alias-state-success-primary);
+  stroke: var(--dsw-alias-state-success-primary);
+  stroke-width: 1.5;
+}
+
+.series3 {
+  fill: var(--dsw-alias-state-error-primary);
+  stroke: var(--dsw-alias-state-error-primary);
+  stroke-width: 1.5;
+}
+
+.lineArea {
+  fill: var(--dsw-alias-state-business-tertiary);
+  stroke: none;
+}
+
+.lineStroke {
+  fill: none;
+  stroke: var(--dsw-alias-state-business-primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.pieWrap {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.pieCenterValue {
+  font-size: 15px;
+  font-weight: 600;
+  fill: var(--dsw-alias-label-primary);
+}
+
+.pieCenterLabel {
+  font-size: 10px;
+  fill: var(--dsw-alias-label-tertiary);
+}
+
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+}
+
+.legendValue {
+  margin-left: auto;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.swatch0 {
+  background: var(--dsw-alias-state-business-primary);
+}
+
+.swatch1 {
+  background: var(--dsw-alias-state-warn-primary);
+}
+
+.swatch2 {
+  background: var(--dsw-alias-state-success-primary);
+}
+
+.swatch3 {
+  background: var(--dsw-alias-state-error-primary);
+}
+
+.swatch0,
+.swatch1,
+.swatch2,
+.swatch3 {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex: none;
+}
