@@ -20,6 +20,7 @@ import type { DiscoveredModelView, IApiClient } from '@deepseek-ai/dsh-api-remot
 import { Button, Modal } from '@deepseek-ai/dsh-client-ui-primitives'
 import { formatCapacity, parseCapacity } from './DeepSeekModelsEditor.tsx'
 import type { DeepSeekModelDraft } from './DeepSeekModelsEditor.tsx'
+import { MODEL_API_OPTIONS, modelApiBadgeText } from './modelApi.ts'
 import { messageOf } from './store.ts'
 import type { en } from './locales.ts'
 import styles from './ModelsSection.module.css'
@@ -388,9 +389,29 @@ export function ModelListEditor(props: ModelListEditorProps): ReactNode {
               <IconTrash />
             </button>
           </div>
+          <div className={styles['modelRowMeta']}>
+            <span className={styles['modelApiBadge']}>{modelApiBadgeText(model['api'], t)}</span>
+          </div>
           {expanded.has(index)
             ? (
               <div className={styles['modelAdvanced']}>
+                <label className={styles['modelField']}>
+                  <span className={styles['modelFieldLabel']}>{t('modelApi')}</span>
+                  <select
+                    className={`${styles['input']} ${styles['selectInput']}`}
+                    value={typeof model['api'] === 'string' ? model['api'] : ''}
+                    aria-label={`${t('modelApi')} ${index + 1}`}
+                    disabled={disabled}
+                    onChange={(event) => {
+                      patch(index, { api: event.target.value === '' ? undefined : event.target.value })
+                    }}
+                  >
+                    <option value="">{t('modelApiInherit')}</option>
+                    {MODEL_API_OPTIONS.map(option => (
+                      <option key={option.value} value={option.value}>{t(option.labelKey)}</option>
+                    ))}
+                  </select>
+                </label>
                 <label className={styles['modelField']}>
                   <span className={styles['modelFieldLabel']}>{t('modelContextWindow')}</span>
                   <input

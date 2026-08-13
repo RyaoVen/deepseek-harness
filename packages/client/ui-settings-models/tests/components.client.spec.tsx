@@ -16,6 +16,7 @@ import {
 import { apiKeyFailure } from '../src/client/apiKey.ts'
 import { deriveKeyRef, ModelsSettingsStore } from '../src/client/store.ts'
 import type { ProviderRow } from '../src/client/store.ts'
+import { isSelectableModelApi, modelApiBadgeText } from '../src/client/modelApi.ts'
 import { en } from '../src/client/locales.ts'
 
 afterEach(cleanup)
@@ -503,6 +504,20 @@ describe('ModelsSection', () => {
     expect(validateDeepSeekModels([{ id: 'model', maxTokens: 0 }]))
       .toEqual({ index: 0, key: 'modelMaxTokensInvalid' })
     expect(validateDeepSeekModels([{ id: 'model', maxTokens: 8192 }])).toBeUndefined()
+  })
+
+  it('badges the request format from the stored api, raw spellings included', () => {
+    expect(modelApiBadgeText(undefined, t)).toBe(en.modelApiInherit)
+    expect(modelApiBadgeText('openai-completions', t)).toBe(en.modelApiOpenAI)
+    expect(modelApiBadgeText('anthropic-messages', t)).toBe(en.modelApiAnthropic)
+    expect(modelApiBadgeText('openai-responses', t)).toBe(en.modelApiResponses)
+    // A hand-written spelling the picker does not offer is shown verbatim, not
+    // dressed up as a state it is not.
+    expect(modelApiBadgeText('bedrock-converse-stream', t)).toBe('bedrock-converse-stream')
+    expect(modelApiBadgeText(42, t)).toBe(en.modelApiInherit)
+    expect(isSelectableModelApi('openai-completions')).toBe(true)
+    expect(isSelectableModelApi('quantum-telepathy')).toBe(false)
+    expect(isSelectableModelApi(42)).toBe(false)
   })
 
   it('reads context windows written as counts, thousands, or millions', () => {
