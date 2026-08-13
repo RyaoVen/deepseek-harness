@@ -147,6 +147,9 @@ const packageFileExtras: Readonly<Record<string, readonly string[]>> = {
   '@deepseek-ai/dsh-sandbox-windows-acl': ['lib/runner.js', 'lib/types-*.js'],
   '@deepseek-ai/dsh-skill-badge': ['assets'],
   '@deepseek-ai/dsh-subprocess-local': ['scripts/ensure-spawn-helper.mjs'],
+  // The agent-plane entry ships as its own bundle beside the lib; the standard
+  // agent preset loads it as `@deepseek-ai/dsh-agent-modes/agent`.
+  '@deepseek-ai/dsh-agent-modes': ['lib/agent.js'],
 }
 
 function sameStringList(actual: readonly string[] | undefined, expected: readonly string[]): boolean {

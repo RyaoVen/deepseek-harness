@@ -1006,6 +1006,25 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'sessionModes',
+    summary: 'Reads and switches one session\'s durable mode.',
+    description: 'Reads and switches one session\'s durable mode.',
+    methods: [
+      {
+        signature: 'get(session: Session): AgentMode',
+        description: 'Fold the current mode from a session\'s log.',
+        parameters: [{ name: 'session', description: 'the session to read.' }],
+        returns: 'the latest valid mode, defaulting to `standard`.',
+      },
+      {
+        signature: 'set(session: Session, mode: AgentMode): number',
+        description: 'Switch a session\'s mode by appending a durable `mode/set` event.',
+        parameters: [{ name: 'session', description: 'the session to switch.' }, { name: 'mode', description: 'the mode to enter.' }],
+        returns: 'the logged event\'s seq.',
+      },
+    ],
+  },
+  {
     key: 'sessionPersistence',
     summary: 'Durable append-only session storage.',
     description: 'Durable append-only session storage. Implementations preserve contiguous, losslessly JSON-serializable events; append resolves only after durability, and load balances a complete interrupted tail without rewriting committed events.',
@@ -2628,6 +2647,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'AgentHandle',
     declaration: 'export interface AgentHandle {\n    agent: Agent;\n    dispose(): Promise<void>;\n}',
+  },
+  {
+    name: 'AgentMode',
+    declaration: 'export type AgentMode = \'standard\' | \'creative\';',
   },
   {
     name: 'AgentOptions',

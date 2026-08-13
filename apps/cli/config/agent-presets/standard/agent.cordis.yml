@@ -32,6 +32,15 @@
   config:
     maxBytes: 65536
 
+# ── session modes ───────────────────────────────────────────────────────────
+
+# The live mode guidance section: folds this agent's durable `mode/set`
+# events and renders the current mode's guidance into the system prompt.
+# The durable mode state and the /mode switch Remote live in the HOST
+# composition (`agent-modes` row); this row is the agent-plane half.
+- id: agent-mode-guidance
+  name: '@deepseek-ai/dsh-agent-modes/agent'
+
 # ── shell ───────────────────────────────────────────────────────────────────
 
 # `shell-env` stays in the HOST composition: `apps/cli/src/web.ts` injects it to
