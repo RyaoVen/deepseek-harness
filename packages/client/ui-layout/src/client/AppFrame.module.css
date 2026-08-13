@@ -25,8 +25,10 @@
 .sidebarCol {
   min-width: 0;
   overflow: hidden;
-  background: var(--dsw-specific-sidebar-fill);
-  border-right: 1px solid var(--dsw-alias-border-l1);
+  background: var(--dsw-alias-surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid var(--dsw-alias-border-glass);
 }
 
 .centerCol {

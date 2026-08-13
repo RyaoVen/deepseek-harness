@@ -291,6 +291,10 @@
     - id: ui-mode-switcher
       name: '@deepseek-ai/dsh-client-ui-mode-switcher'
 
+    # Desktop decoration switch: shows/hides the Electron mascot window.
+    - id: ui-desktop-decoration
+      name: '@deepseek-ai/dsh-client-ui-desktop-decoration'
+
     # Plan control: the composer plan seat over the plan projection + /plan channel.
     - id: ui-plan
       name: '@deepseek-ai/dsh-client-ui-plan'

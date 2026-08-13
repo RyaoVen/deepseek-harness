@@ -19,6 +19,7 @@ The shell resolves the `dsh` CLI from the workspace (`@deepseek-ai/dsh`), spawns
 - **Single instance** — a second launch focuses the existing window instead of starting another server.
 - **Window state** — the window size is persisted to `userData/window-state.json` and restored on the next launch.
 - **Tray** — a tray icon offers 打开主窗口, 在浏览器中打开 (when the server is up), and 退出.
+- **Desktop decoration** — when enabled (the Web settings General-section switch, visible only inside the shell), a transparent always-on-top 150×150 window shows a mascot orb that mirrors the session state (idle / thinking / done) by folding the same `/api/events.mux` downlink the GUI uses; the orb is draggable, click returns to the main window, and right-click offers 隐藏挂饰 / 退出. The switch state persists in `userData/window-state.json`.
 - **Clean shutdown** — quitting kills the child `dsh web` process tree (`taskkill /T /F` on Windows, the process group on POSIX).
 - **Credential posture** — the shell adds nothing to the server's surface: the GUI, models, credentials, and settings are exactly the Web GUI's own.
 

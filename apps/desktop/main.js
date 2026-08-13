@@ -5,7 +5,7 @@
  * served by the child exactly as it would be for a browser.
  */
 
-import { app, BrowserWindow, Menu, nativeImage, shell, Tray } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, nativeImage, shell, Tray } from 'electron'
 import { spawn, spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
@@ -141,7 +141,7 @@ async function readWindowState() {
     const width = raw['width']
     const height = raw['height']
     if (typeof width === 'number' && typeof height === 'number' && width >= 400 && height >= 300) {
-      return { width, height }
+      return { width, height, decorEnabled: raw['decorEnabled'] === true }
     }
   } catch {
     /* no state yet or unreadable — first run defaults */
@@ -149,17 +149,21 @@ async function readWindowState() {
   return undefined
 }
 
-/** Persist the window geometry on close. */
+/** Persist the window geometry and the decoration switch on close. */
 async function writeWindowState(win) {
   const [width, height] = win.getSize()
   await mkdir(dirname(statePath()), { recursive: true })
-  await writeFile(statePath(), JSON.stringify({ width, height }))
+  await writeFile(statePath(), JSON.stringify({ width, height, decorEnabled }))
 }
 
 let mainWindow
 let tray
 let serverProc
 let serverUrl
+let decorWindow
+
+/** Whether the desktop decoration is shown; persisted with the window state. */
+let decorEnabled = false
 
 /** Focus the main window, creating nothing new. */
 function focusWindow() {
@@ -167,6 +171,72 @@ function focusWindow() {
   if (mainWindow.isMinimized()) mainWindow.restore()
   mainWindow.show()
   mainWindow.focus()
+}
+
+/**
+ * Create the transparent always-on-top decoration window. The page folds the
+ * session mux downlink itself, so the only shell input is click/menu intent.
+ */
+function createDecorWindow() {
+  if (decorWindow !== undefined && !decorWindow.isDestroyed()) {
+    decorWindow.show()
+    return
+  }
+  decorWindow = new BrowserWindow({
+    width: 150,
+    height: 150,
+    transparent: true,
+    frame: false,
+    resizable: false,
+    movable: true,
+    skipTaskbar: true,
+    alwaysOnTop: true,
+    hasShadow: false,
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      preload: join(HERE, 'decor-preload.js'),
+    },
+  })
+  void decorWindow.loadFile(join(HERE, 'decor.html'), { query: serverUrl === undefined ? {} : { server: serverUrl } })
+  // Closing the decoration hides it (the tray/right-click menu reopens it);
+  // the shell keeps running while the main window exists.
+  decorWindow.on('close', (event) => {
+    event.preventDefault()
+    decorWindow?.hide()
+  })
+  decorWindow.on('closed', () => { decorWindow = undefined })
+}
+
+/** Hide the decoration window (the settings switch and menu both land here). */
+function hideDecorWindow() {
+  decorWindow?.hide()
+}
+
+/** The decoration's right-click menu. */
+function decorContextMenu() {
+  return Menu.buildFromTemplate([
+    { label: '隐藏挂饰', click: () => { decorEnabled = false; hideDecorWindow() } },
+    { type: 'separator' },
+    { label: '退出', click: () => { app.quit() } },
+  ])
+}
+
+/** Wire the shell IPC: the decoration switch and the decor window's intents. */
+function mountIpc() {
+  ipcMain.handle('desktop:decor-get', () => decorEnabled)
+  ipcMain.on('desktop:decor-set', (_event, enabled) => {
+    decorEnabled = enabled === true
+    if (decorEnabled) createDecorWindow()
+    else hideDecorWindow()
+    if (mainWindow !== undefined && !mainWindow.isDestroyed()) {
+      void writeWindowState(mainWindow)
+    }
+  })
+  ipcMain.on('decor:activate', () => { focusWindow() })
+  ipcMain.on('decor:menu', () => {
+    decorContextMenu().popup({ window: decorWindow })
+  })
 }
 
 /** Build the tray icon and its menu once the window exists. */
@@ -187,8 +257,10 @@ async function boot() {
   const { proc, url } = await launchServer()
   serverProc = proc
   serverUrl = url
+  mountIpc()
 
   const bounds = await readWindowState()
+  decorEnabled = bounds?.decorEnabled ?? false
   mainWindow = new BrowserWindow({
     width: bounds?.width ?? 1280,
     height: bounds?.height ?? 800,
@@ -198,12 +270,14 @@ async function boot() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      preload: join(HERE, 'preload.js'),
     },
   })
   void mainWindow.loadURL(url)
   mainWindow.on('close', () => { void writeWindowState(mainWindow) })
   mainWindow.on('closed', () => { mainWindow = undefined })
   mountTray()
+  if (decorEnabled) createDecorWindow()
 }
 
 const gotLock = app.requestSingleInstanceLock()
