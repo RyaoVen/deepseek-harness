@@ -47,6 +47,12 @@ type ResolvedConfig = Required<Config>
 type VibeCallArgs = {
   request: string
   answers?: Record<string, JsonValue>
+  /** Spec-mode prefill: a confirmed requirements archive (skips the product manager). */
+  requirements?: Record<string, JsonValue>
+  /** Spec-mode prefill: a confirmed module-level technical design (skips the architect). */
+  design?: Record<string, JsonValue>
+  /** Spec-mode prefill: a confirmed style guide (skips the UI designer). */
+  styleGuide?: Record<string, JsonValue>
 }
 
 /** The workflow identity: the fixed cluster's progress vocabulary. */
@@ -68,7 +74,9 @@ const VIBE_META = {
 /** The model-facing contract: what the vibe tool does and what the run returns. */
 const DESCRIPTION = `Run the fixed agent-cluster workflow (the vibe mode default): the product manager clarifies the request and archives requirements, the UI designer and the architect work in parallel, frontend and backend engineers implement the architect's modules in small parts with per-part unit tests (the architect can spawn multiple engineer instances per module), and the test engineer reviews the whole delivery and runs the tests. Issues reported by the test engineer escalate back up: the architect assigns fixes, the engineers apply them, and the test engineer verifies.
 
-When the run returns "needs-input", ask the user the listed openQuestions, then re-run the vibe tool with those answers in the "answers" parameter instead of starting over.`
+When the run returns "needs-input", ask the user the listed openQuestions, then re-run the vibe tool with those answers in the "answers" parameter instead of starting over.
+
+Spec mode prefill: after a user-led design discussion, pass the confirmed artifacts so the cluster skips the matching phases and executes in one pass — "requirements" (a requirements archive: title, goal, requirements, assumptions) skips the product manager, "design" (a technical design whose modules each carry id, title, layer, tasks, acceptance) skips the architect, and "styleGuide" skips the UI designer. The engineers, test engineer, and escalation still run.`
 
 /** A non-`completed` stop reason means the run did not finish cleanly. */
 function stopReasonError(result: WorkflowResult): string | undefined {
@@ -133,6 +141,21 @@ export function apply(ctx: Context, config: Config): void {
         additionalProperties: true,
         description: 'Optional user decisions answering a previous run\'s openQuestions; re-run with them instead of starting over.',
       },
+      requirements: {
+        type: 'object',
+        additionalProperties: true,
+        description: 'Spec-mode prefill: a confirmed requirements archive; skips the product manager phase.',
+      },
+      design: {
+        type: 'object',
+        additionalProperties: true,
+        description: 'Spec-mode prefill: a confirmed module-level technical design; skips the architect phase.',
+      },
+      styleGuide: {
+        type: 'object',
+        additionalProperties: true,
+        description: 'Spec-mode prefill: a confirmed style guide; skips the UI designer phase.',
+      },
     },
     output: {
       schema: {
@@ -163,6 +186,9 @@ export function apply(ctx: Context, config: Config): void {
         args: {
           request: args.request,
           ...args.answers !== undefined ? { answers: args.answers } : {},
+          ...args.requirements !== undefined ? { requirements: args.requirements } : {},
+          ...args.design !== undefined ? { design: args.design } : {},
+          ...args.styleGuide !== undefined ? { styleGuide: args.styleGuide } : {},
         },
         parent,
         signal: exec.signal,

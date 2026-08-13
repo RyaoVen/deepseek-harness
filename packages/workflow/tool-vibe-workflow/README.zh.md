@@ -6,7 +6,7 @@
 
 ## What the model sees
 
-两个参数：`request`（必填——集群要处理的用户请求或实现目标）与 `answers`（可选——回答上一次运行 `openQuestions` 的用户决策，让 needs-input 运行可续跑而非重来）。插件还注册一个 `tool:<toolName>` 系统提示词段落承载使用策略——在 vibe 模式或用户要求固定 agent 集群工作流时使用 `vibe` 工具；运行返回 "needs-input" 时询问用户并带答案重跑——遵循工具指引随工具插件分发、绝不进部署人格的约定。
+五个参数：`request`（必填——集群要处理的用户请求或实现目标）、`answers`（可选——回答上一次运行 `openQuestions` 的用户决策，让 needs-input 运行可续跑而非重来），以及 spec 模式预填 `requirements`（已确认的需求档案，跳过产品经理）、`design`（已确认的模块级技术设计，跳过架构师）与 `styleGuide`（已确认的样式规范，跳过 UI 设计师）——在用户主导的设计讨论之后，三个都预填即可让集群一次调用跑完全部交付。插件还注册一个 `tool:<toolName>` 系统提示词段落承载使用策略——在 vibe 模式或用户要求固定 agent 集群工作流时使用 `vibe` 工具；运行返回 "needs-input" 时询问用户并带答案重跑——遵循工具指引随工具插件分发、绝不进部署人格的约定。
 
 运行的规范值是集群摘要：`stage`（`done`、`needs-input` 或 `failed`）、需求档案、样式规范、架构、逐模块工程师报告、测试报告，以及测试工程师发现问题时的升级记录。
 
@@ -80,4 +80,5 @@ Use the <toolName> tool when the session is in vibe mode or the user asks for th
 - **父回合阻塞到整个集群静默** —— 没有后台启动/轮询 API，取消把部分输出当作错误丢弃。
 - **单轮升级** —— 集群修复并复验一次；第二轮问题留在验证报告中，由调用 agent 处理。
 - **子 agent 未必能触达用户** —— 集群把用户决策路由到调用 agent：开放问题以 `needs-input` 浮出，调用者带答案重跑；拥有 `ask_user` 工具的子 agent 可直接询问。
+- **预填受信任而不复验** —— spec 模式的 `design` 预填必须携带模块形态（`modules` 含 `id`/`title`/`layer`/`tasks`/`acceptance`）；modules 数组缺失时脚本大声失败。
 - **引擎与提供方上限适用** —— 模块扇出受 workflow 引擎并发与总 agent 上限约束。
