@@ -506,6 +506,26 @@
   padding: 8px 4px 2px;
 }
 
+/* One row's at-a-glance facts, under the id/name grid: the request-format
+   badge rides here so a stored value stays visible while the row is folded. */
+.modelRowMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px 0;
+}
+
+.modelApiBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 0 6px;
+  background: var(--dsw-alias-bg-skeleton);
+  color: var(--dsw-alias-label-secondary);
+  font-size: 11px;
+  line-height: 18px;
+}
+
 .modelField {
   display: flex;
   flex-direction: column;

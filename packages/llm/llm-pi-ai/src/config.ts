@@ -29,7 +29,8 @@ import type {
   PiAiModelProfile,
   PiAiReasoningEfforts,
 } from './catalog.ts'
-import { buildProvider, supportedProtocols } from './provider.ts'
+import { buildProvider } from './provider.ts'
+import { supportedProtocols } from './protocols.ts'
 
 /** Default maximum idle interval while an adapter stream read is outstanding. */
 export const DEFAULT_STREAM_IDLE_TIMEOUT_MS = 300_000
@@ -214,6 +215,10 @@ const modelFields = {
   // materializes `[]` for an absent array, and resolution reads that as "no
   // answer here" so the catalog entry below still applies.
   input: z.array(z.union(MODALITIES)),
+  // Shape-only: resolution is where a value is accepted or refused, because
+  // the no-op spelling — the installed catalog model's own api — is only
+  // knowable there, next to the catalog entry itself.
+  api: z.string(),
   // The union, not a bare dict: schemastery materializes an absent dict as
   // `{}`, and absent must stay distinguishable — it means "inherit the
   // installed catalog's capability", while `false` disables reasoning.
@@ -364,6 +369,7 @@ export function resolveProfiles(
         ...source.api === undefined ? {} : { api: source.api },
         ...source.baseURL === undefined ? {} : { baseURL: source.baseURL },
         models: catalog.models,
+        repointed: catalog.repointed,
         namesCredential: apiKeyEnv !== undefined,
       }),
     })

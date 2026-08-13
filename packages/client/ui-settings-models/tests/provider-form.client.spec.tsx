@@ -213,6 +213,49 @@ describe('model list editing', () => {
     })
   })
 
+  it('stores the request format picked per model', async () => {
+    const { mutate } = await mountSection()
+    openEditor('openai')
+
+    fireEvent.click(screen.getByRole('button', { name: en.addModel }))
+    fireEvent.change(screen.getByLabelText(`${en.modelId} 1`), { target: { value: 'm' } })
+    expandModel(1)
+    fireEvent.change(screen.getByLabelText(`${en.modelApi} 1`), { target: { value: 'anthropic-messages' } })
+    fireEvent.click(screen.getByText(en.apply))
+
+    await waitFor(() => { expect(mutate).toHaveBeenCalled() })
+    expect(firstMutate(mutate).ops[0]?.value).toEqual([{ id: 'm', api: 'anthropic-messages' }])
+  })
+
+  it('shows the stored request format on each row and clears back to inherit', async () => {
+    const { mutate } = await mountSection({
+      providers: {
+        openai: {
+          baseURL: 'https://proxy.example/v1',
+          models: [{ id: 'kept', api: 'openai-responses' }, { id: 'plain' }],
+        },
+      },
+    })
+    openEditor('openai')
+
+    // A folded row badges its stored format; a row without one shows the
+    // inherit label.
+    expect(screen.getAllByText(en.modelApiResponses).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(en.modelApiInherit).length).toBeGreaterThanOrEqual(1)
+
+    expandModel(1)
+    expandModel(2)
+    expect(screen.getByLabelText<HTMLSelectElement>(`${en.modelApi} 1`).value).toBe('openai-responses')
+    expect(screen.getByLabelText<HTMLSelectElement>(`${en.modelApi} 2`).value).toBe('')
+
+    fireEvent.change(screen.getByLabelText(`${en.modelApi} 1`), { target: { value: '' } })
+    fireEvent.click(screen.getByText(en.apply))
+
+    await waitFor(() => { expect(mutate).toHaveBeenCalled() })
+    // Clearing the picker drops the field, never stores an empty string.
+    expect(firstMutate(mutate).ops[0]?.value).toEqual([{ id: 'kept' }, { id: 'plain' }])
+  })
+
   it('names a duplicate model id in the edit flow too', async () => {
     const { mutate } = await mountSection({
       providers: { openai: { baseURL: 'https://proxy.example/v1', models: [{ id: 'dup' }] } },

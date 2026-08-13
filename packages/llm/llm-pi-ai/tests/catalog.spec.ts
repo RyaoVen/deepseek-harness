@@ -13,7 +13,10 @@ import { getBuiltinModels } from '@earendil-works/pi-ai/providers/all'
 import { createModels, getSupportedThinkingLevels } from '@earendil-works/pi-ai'
 import type { Api, Model, OpenAICompletionsCompat, Provider } from '@earendil-works/pi-ai'
 import { resolveProfiles } from '../src/config.ts'
-import { buildProvider, supportedProtocols } from '../src/provider.ts'
+import { DEFAULT_CONTEXT_WINDOW, DEFAULT_INPUT, DEFAULT_MAX_TOKENS } from '../src/config.ts'
+import { resolveRouteModels } from '../src/catalog.ts'
+import { buildProvider } from '../src/provider.ts'
+import { supportedProtocols } from '../src/protocols.ts'
 import { assemble } from './assemble.ts'
 import { closeMockServers, mockServer, textEvents } from './mock-server.ts'
 
@@ -319,13 +322,17 @@ describe('hand-declared providers', () => {
       // endpoint, and headers can carry, so a route naming one would be built
       // unable to authenticate.
       expect(supportedProtocols()).not.toContain(api)
-      expect(() => buildProvider({ provider: 'acme-gateway', displayName: 'Acme', api, models: [], namesCredential: true }))
+      expect(() => buildProvider({
+        provider: 'acme-gateway', displayName: 'Acme', api, models: [], repointed: false, namesCredential: true,
+      }))
         .toThrow(/cannot serve; supported protocols are/)
     },
   )
 
   it('rejects a protocol this build cannot serve, and a route that names none', () => {
-    const spec = { provider: 'acme-gateway', displayName: 'Acme Gateway', models: [], namesCredential: true }
+    const spec = {
+      provider: 'acme-gateway', displayName: 'Acme Gateway', models: [], repointed: false, namesCredential: true,
+    }
     expect(() => buildProvider({ ...spec, api: 'quantum-telepathy' }))
       .toThrow(/cannot serve; supported protocols are/)
     expect(() => buildProvider(spec)).toThrow(/cannot serve; supported protocols are/)
@@ -583,6 +590,176 @@ describe('catalog routes with per-model configuration', () => {
     // trade a truthful refusal for an endpoint's 401.
     const resolved = resolveProfiles({ 'openai-codex': {} })
     expect(resolved.get('openai-codex')?.piProvider.auth.apiKey).toBeUndefined()
+  })
+})
+
+describe('per-model wire protocols', () => {
+  /** The route facts {@link resolveRouteModels} reads, defaulted for a catalog route. */
+  const deepseekCatalog = (
+    overrides: Partial<Parameters<typeof resolveRouteModels>[0]> = {},
+  ): Parameters<typeof resolveRouteModels>[0] => ({
+    provider: 'deepseek',
+    defaultContextWindow: DEFAULT_CONTEXT_WINDOW,
+    defaultMaxTokens: DEFAULT_MAX_TOKENS,
+    defaultInput: [...DEFAULT_INPUT],
+    ...overrides,
+  })
+
+  it('repoints one catalog model while its siblings keep the catalog protocol', () => {
+    const [catalogModel] = getBuiltinModels('deepseek')
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const resolved = resolveRouteModels(deepseekCatalog({
+      modelOverrides: { [catalogModel.id]: { api: 'anthropic-messages' } },
+    }))
+
+    expect(resolved.repointed).toBe(true)
+    const repointed = resolved.models.find(model => model.id === catalogModel.id)
+    expect(repointed?.api).toBe('anthropic-messages')
+    // Siblings keep the catalog protocol, so the route mixes protocols and the
+    // provider must dispatch per model rather than reuse the catalog's.
+    expect(resolved.models.filter(model => model.api === 'openai-completions').length).toBeGreaterThan(0)
+  })
+
+  it('treats restating a catalog model\'s own api as no repoint', () => {
+    const [catalogModel] = getBuiltinModels('deepseek')
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const resolved = resolveRouteModels(deepseekCatalog({
+      modelOverrides: { [catalogModel.id]: { api: catalogModel.api } },
+    }))
+
+    expect(resolved.repointed).toBe(false)
+    expect(resolved.models.find(model => model.id === catalogModel.id)?.api).toBe(catalogModel.api)
+  })
+
+  it('lets a model api win over the route api', () => {
+    const [catalogModel] = getBuiltinModels('deepseek')
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    const resolved = resolveRouteModels(deepseekCatalog({
+      api: 'openai-responses',
+      modelOverrides: { [catalogModel.id]: { api: 'anthropic-messages' } },
+    }))
+
+    expect(resolved.repointed).toBe(true)
+    expect(resolved.models.find(model => model.id === catalogModel.id)?.api).toBe('anthropic-messages')
+    expect(resolved.models.filter(model => model.api === 'openai-responses').length).toBeGreaterThan(0)
+  })
+
+  it('accepts a model api on a hand-declared route', () => {
+    const resolved = resolveRouteModels({
+      provider: 'acme-gateway',
+      api: 'openai-completions',
+      baseURL: 'https://acme.test/v1',
+      models: [
+        { id: 'acme-chat', contextWindow: 1024, maxTokens: 64 },
+        { id: 'acme-anth', contextWindow: 1024, maxTokens: 64, api: 'anthropic-messages' },
+      ],
+      defaultContextWindow: DEFAULT_CONTEXT_WINDOW,
+      defaultMaxTokens: DEFAULT_MAX_TOKENS,
+      defaultInput: [...DEFAULT_INPUT],
+    })
+
+    expect(resolved.repointed).toBe(true)
+    expect(resolved.models.map(model => `${model.id}:${model.api}`)).toEqual([
+      'acme-chat:openai-completions',
+      'acme-anth:anthropic-messages',
+    ])
+  })
+
+  it('refuses a model api the protocol table cannot serve', () => {
+    const [catalogModel] = getBuiltinModels('deepseek')
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no deepseek model')
+    expect(() => resolveRouteModels(deepseekCatalog({
+      modelOverrides: { [catalogModel.id]: { api: 'quantum-telepathy' } },
+    }))).toThrow(/names api "quantum-telepathy"/)
+  })
+
+  it('refuses a catalog-only api beside a repointed sibling', () => {
+    // mistral's catalog models speak `mistral-conversations`, which only the
+    // catalog provider can serve; a repointed route must be fully table-served,
+    // so the untouched siblings fail resolution rather than dispatch to a
+    // provider that cannot be built beside the repoint.
+    const [catalogModel] = getBuiltinModels('mistral')
+    if (catalogModel === undefined) throw new Error('the installed catalog ships no mistral model')
+    expect(() => resolveRouteModels({
+      provider: 'mistral',
+      modelOverrides: { [catalogModel.id]: { api: 'openai-completions' } },
+      defaultContextWindow: DEFAULT_CONTEXT_WINDOW,
+      defaultMaxTokens: DEFAULT_MAX_TOKENS,
+      defaultInput: [...DEFAULT_INPUT],
+    })).toThrow(/keeps api "mistral-conversations"/)
+  })
+
+  it('dispatches each request on the model\'s own protocol', async () => {
+    const server = await mockServer([{ events: textEvents }, { events: textEvents }])
+    const resolved = resolveProfiles({
+      'acme-gateway': {
+        apiKeyEnv: KEY_ENV,
+        api: 'openai-completions',
+        // No `/v1` suffix: the two protocol implementations append their own
+        // paths, so a suffix the chat-completions shape expects would be
+        // restated by the anthropic shape.
+        baseURL: server.url,
+        models: [
+          { id: 'acme-chat', contextWindow: 1024, maxTokens: 64 },
+          { id: 'acme-anth', contextWindow: 1024, maxTokens: 64, api: 'anthropic-messages' },
+        ],
+      },
+    })
+    const built = resolved.get('acme-gateway')?.piProvider
+    if (built === undefined) throw new Error('the acme-gateway route built no provider')
+    const [chat, anth] = built.getModels()
+    if (chat === undefined || anth === undefined) throw new Error('the acme-gateway route resolved no models')
+    const context = { messages: [{ role: 'user' as const, content: 'hi', timestamp: 0 }] }
+
+    for await (const _event of built.streamSimple(chat, context, { apiKey: 'k' })) { /* drain */ }
+    try {
+      for await (const _event of built.streamSimple(anth, context, { apiKey: 'k' })) { /* drain */ }
+    } catch {
+      // The mock's chat-completions frames cannot parse as anthropic events;
+      // dispatch is proven by the request path below, not by a clean stream.
+    }
+
+    // The anthropic implementation appends its own `/v1` prefix, so the two
+    // shapes resolve their paths independently of how the baseURL was spelled.
+    expect(server.paths).toEqual(['/chat/completions', '/v1/messages'])
+  })
+
+  it('builds the dispatching provider from route facts without a route endpoint', async () => {
+    const server = await mockServer([{ events: textEvents }, { events: textEvents }])
+    const resolved = resolveProfiles({
+      'acme-gateway': {
+        apiKeyEnv: KEY_ENV,
+        api: 'openai-completions',
+        baseURL: server.url,
+        models: [
+          { id: 'acme-chat', contextWindow: 1024, maxTokens: 64 },
+          { id: 'acme-anth', contextWindow: 1024, maxTokens: 64, api: 'anthropic-messages' },
+        ],
+      },
+    })
+    const [chat, anth] = resolved.get('acme-gateway')?.piProvider.getModels() ?? []
+    if (chat === undefined || anth === undefined) throw new Error('the acme-gateway route resolved no models')
+    // Built again without restating the endpoint: the provider itself carries
+    // none — the `{}` baseUrl path — and dispatch reads each model's own.
+    const built = buildProvider({
+      provider: 'acme-gateway',
+      displayName: 'Acme Gateway',
+      models: [chat, anth],
+      repointed: true,
+      namesCredential: true,
+    })
+    expect(built.baseUrl).toBeUndefined()
+    const context = { messages: [{ role: 'user' as const, content: 'hi', timestamp: 0 }] }
+
+    for await (const _event of built.stream(chat, context, { apiKey: 'k' })) { /* drain */ }
+    try {
+      for await (const _event of built.streamSimple(anth, context, { apiKey: 'k' })) { /* drain */ }
+    } catch {
+      // The mock's chat-completions frames cannot parse as anthropic events;
+      // dispatch is proven by the request path below, not by a clean stream.
+    }
+
+    expect(server.paths).toEqual(['/chat/completions', '/v1/messages'])
   })
 })
 

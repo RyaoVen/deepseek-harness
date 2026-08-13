@@ -23,6 +23,7 @@ import type {
   Provider,
   ThinkingLevelMap,
 } from '@earendil-works/pi-ai'
+import { supportedProtocols } from './protocols.ts'
 
 /**
  * Pricing for a model the installed catalog does not describe. The harness
@@ -226,6 +227,14 @@ export interface PiAiModelProfile {
    */
   input?: PiAiModality[]
   /**
+   * Wire protocol this model speaks, winning over the route's `api`. Must be a
+   * protocol in {@link supportedProtocols} or the installed catalog model's own
+   * api — restating it is the explicit no-op that says "this model stays put
+   * while the route repoints its siblings". Anything else fails resolution
+   * naming the route and model.
+   */
+  api?: string
+  /**
    * Selectable reasoning efforts. Absent inherits the installed catalog
    * entry's capability (a hand-declared model has none and does not reason);
    * `false` declares a non-reasoning model, which is how a profile strips
@@ -423,6 +432,14 @@ export interface RouteCatalog {
   /** The materialized models in configuration order. */
   models: readonly Model<Api>[]
   /**
+   * Whether any entry's `api` diverged from what route-level resolution would
+   * give it, mixing protocols on the route. Provider construction reads this:
+   * a uniform route keeps its single-protocol path, a repointed one dispatches
+   * per model — and resolution only declares one when every model speaks a
+   * protocol the dispatch build can serve.
+   */
+  repointed: boolean
+  /**
    * Per-request output caps this profile explicitly configured, by model id.
    *
    * Separate from `Model.maxTokens` because the two answer different
@@ -441,7 +458,8 @@ export interface RouteCatalog {
  * installed catalog unchanged, which is what keeps an existing
  * `providers: { deepseek: { apiKeyEnv: … } }` profile working untouched.
  * @param request - the route-level catalog facts.
- * @returns the materialized models and the explicitly configured request caps.
+ * @returns the materialized models, the explicitly configured request caps,
+ *   and whether any model repointed its protocol.
  */
 export function resolveRouteModels(request: RouteCatalogRequest): RouteCatalog {
   const { provider } = request
@@ -489,12 +507,24 @@ export function resolveRouteModels(request: RouteCatalogRequest): RouteCatalog {
     || request.compat?.supportsReasoningEffort !== undefined
   const seen = new Set<string>()
   const configuredMaxTokens = new Map<string, number>()
+  let repointed = false
   const models = entries.map((entry) => {
     if (entry.id.length === 0) invalid(provider, 'has a model with an empty id')
     if (seen.has(entry.id)) invalid(provider, `lists model "${entry.id}" more than once`)
     seen.add(entry.id)
     const base = defaults.get(entry.id)
-    const api = request.api ?? base?.api ?? routeApi
+    // A model's own protocol wins over the route's. Only two spellings are
+    // legal: a protocol the protocol table can serve, or the catalog model's
+    // own api — restating it repoints nothing and says "keep this one put".
+    if (entry.api !== undefined
+      && !supportedProtocols().includes(entry.api)
+      && entry.api !== base?.api) {
+      invalid(provider, `model "${entry.id}" names api "${entry.api}", which this build cannot serve; set a supported`
+        + ` protocol (${supportedProtocols().join(', ')}) or the model's own catalog api "${base?.api ?? '<none>'}"`)
+    }
+    const routeApiFor = request.api ?? base?.api ?? routeApi
+    if (entry.api !== undefined && entry.api !== routeApiFor) repointed = true
+    const api = entry.api ?? routeApiFor
     if (api === undefined) {
       invalid(provider, `model "${entry.id}" needs an api; the installed catalog does not describe it, so set the`
         + ' route\'s api to the wire protocol its endpoint speaks')
@@ -538,9 +568,18 @@ export function resolveRouteModels(request: RouteCatalogRequest): RouteCatalog {
       ...resolveModelCompat(provider, entry, request.compat, base, api),
     }
   })
+  if (repointed) {
+    for (const model of models) {
+      if (!supportedProtocols().includes(model.api)) {
+        invalid(provider, `model "${model.id}" keeps api "${model.api}", which this build cannot serve beside a`
+          + ' repointed sibling; repoint it too, or name only protocols this build can construct'
+          + ` (${supportedProtocols().join(', ')})`)
+      }
+    }
+  }
   if (routeCompatDefined && !models.some(model => model.api === 'openai-completions')) {
     invalid(provider, 'sets compat reasoning switches, but no model on the route speaks openai-completions;'
       + ' thinkingFormat and supportsReasoningEffort exist only on that protocol')
   }
-  return { models, configuredMaxTokens }
+  return { models, configuredMaxTokens, repointed }
 }
