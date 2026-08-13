@@ -1,0 +1,42 @@
+/* Decorative-motion policy. `body[data-motion]` carries the persisted level
+ * (the presenter and the boot script both write it); the `reduced` level and
+ * the OS `prefers-reduced-motion` preference compress every animation and
+ * transition to effectively nothing — durations collapse rather than remove,
+ * so animation lifecycle events still fire. `standard` adds no override: the
+ * base stylesheets' transitions and the shared keyframes below apply. */
+
+body[data-motion='reduced'] *,
+body[data-motion='reduced'] *::before,
+body[data-motion='reduced'] *::after {
+  animation-duration: 0.001s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001s !important;
+  transition-delay: 0s !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+    transition-delay: 0s !important;
+  }
+}
+
+/* Shared entrance keyframes: a new conversation node fades in over a short
+ * rise. Consumers (ui-conversation's message wrapper) reference the keyframe
+ * by name; the reduced-motion policy above collapses its duration. */
+@keyframes dsw-fade-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

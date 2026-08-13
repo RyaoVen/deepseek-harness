@@ -1,0 +1,173 @@
+/* Accent palettes: whole-ramp overrides of the DeepSeek brand steps. Each
+ * palette redefines every --dsw-static-deepseek-* token the alias layer
+ * reads, once per color scheme; the shipped DeepSeek ramp itself needs no
+ * block — absence of `data-accent` and the `deepseek` value both render the
+ * base stylesheet. The `700-delete` key is spelled as shipped. */
+
+body[data-accent='teal'] {
+  --dsw-static-deepseek-50: rgb(240, 253, 250);
+  --dsw-static-deepseek-100: rgb(204, 251, 241);
+  --dsw-static-deepseek-200: rgb(153, 246, 228);
+  --dsw-static-deepseek-300: rgb(94, 234, 212);
+  --dsw-static-deepseek-400: rgb(45, 212, 191);
+  --dsw-static-deepseek-450: rgb(20, 184, 166);
+  --dsw-static-deepseek-500: rgb(13, 148, 136);
+  --dsw-static-deepseek-600: rgb(15, 118, 110);
+  --dsw-static-deepseek-700-delete: rgb(17, 94, 89);
+  --dsw-static-deepseek-800: rgb(19, 78, 74);
+  --dsw-static-deepseek-900: rgb(4, 47, 46);
+}
+
+body[data-ds-dark-theme][data-accent='teal'] {
+  --dsw-static-deepseek-50: rgb(6, 46, 44);
+  --dsw-static-deepseek-100: rgb(19, 78, 74);
+  --dsw-static-deepseek-200: rgb(15, 118, 110);
+  --dsw-static-deepseek-300: rgb(13, 148, 136);
+  --dsw-static-deepseek-400: rgb(45, 212, 191);
+  --dsw-static-deepseek-450: rgb(45, 212, 191);
+  --dsw-static-deepseek-500: rgb(20, 184, 166);
+  --dsw-static-deepseek-600: rgb(94, 234, 212);
+  --dsw-static-deepseek-700-delete: rgb(15, 118, 110);
+  --dsw-static-deepseek-800: rgb(19, 78, 74);
+  --dsw-static-deepseek-900: rgb(4, 47, 46);
+}
+
+body[data-accent='violet'] {
+  --dsw-static-deepseek-50: rgb(245, 243, 255);
+  --dsw-static-deepseek-100: rgb(237, 233, 254);
+  --dsw-static-deepseek-200: rgb(221, 214, 254);
+  --dsw-static-deepseek-300: rgb(196, 181, 253);
+  --dsw-static-deepseek-400: rgb(167, 139, 250);
+  --dsw-static-deepseek-450: rgb(139, 92, 246);
+  --dsw-static-deepseek-500: rgb(124, 58, 237);
+  --dsw-static-deepseek-600: rgb(109, 40, 217);
+  --dsw-static-deepseek-700-delete: rgb(91, 33, 182);
+  --dsw-static-deepseek-800: rgb(76, 29, 149);
+  --dsw-static-deepseek-900: rgb(46, 16, 101);
+}
+
+body[data-ds-dark-theme][data-accent='violet'] {
+  --dsw-static-deepseek-50: rgb(46, 16, 101);
+  --dsw-static-deepseek-100: rgb(76, 29, 149);
+  --dsw-static-deepseek-200: rgb(91, 33, 182);
+  --dsw-static-deepseek-300: rgb(109, 40, 217);
+  --dsw-static-deepseek-400: rgb(167, 139, 250);
+  --dsw-static-deepseek-450: rgb(139, 92, 246);
+  --dsw-static-deepseek-500: rgb(124, 58, 237);
+  --dsw-static-deepseek-600: rgb(167, 139, 250);
+  --dsw-static-deepseek-700-delete: rgb(109, 40, 217);
+  --dsw-static-deepseek-800: rgb(76, 29, 149);
+  --dsw-static-deepseek-900: rgb(46, 16, 101);
+}
+
+body[data-accent='rose'] {
+  --dsw-static-deepseek-50: rgb(255, 241, 242);
+  --dsw-static-deepseek-100: rgb(255, 228, 230);
+  --dsw-static-deepseek-200: rgb(254, 205, 211);
+  --dsw-static-deepseek-300: rgb(253, 164, 175);
+  --dsw-static-deepseek-400: rgb(251, 113, 133);
+  --dsw-static-deepseek-450: rgb(244, 63, 94);
+  --dsw-static-deepseek-500: rgb(225, 29, 72);
+  --dsw-static-deepseek-600: rgb(190, 18, 60);
+  --dsw-static-deepseek-700-delete: rgb(159, 18, 57);
+  --dsw-static-deepseek-800: rgb(136, 19, 55);
+  --dsw-static-deepseek-900: rgb(76, 5, 25);
+}
+
+body[data-ds-dark-theme][data-accent='rose'] {
+  --dsw-static-deepseek-50: rgb(76, 5, 25);
+  --dsw-static-deepseek-100: rgb(136, 19, 55);
+  --dsw-static-deepseek-200: rgb(159, 18, 57);
+  --dsw-static-deepseek-300: rgb(190, 18, 60);
+  --dsw-static-deepseek-400: rgb(251, 113, 133);
+  --dsw-static-deepseek-450: rgb(244, 63, 94);
+  --dsw-static-deepseek-500: rgb(225, 29, 72);
+  --dsw-static-deepseek-600: rgb(251, 113, 133);
+  --dsw-static-deepseek-700-delete: rgb(190, 18, 60);
+  --dsw-static-deepseek-800: rgb(136, 19, 55);
+  --dsw-static-deepseek-900: rgb(76, 5, 25);
+}
+
+body[data-accent='amber'] {
+  --dsw-static-deepseek-50: rgb(255, 251, 235);
+  --dsw-static-deepseek-100: rgb(254, 243, 199);
+  --dsw-static-deepseek-200: rgb(253, 230, 138);
+  --dsw-static-deepseek-300: rgb(252, 211, 77);
+  --dsw-static-deepseek-400: rgb(251, 191, 36);
+  --dsw-static-deepseek-450: rgb(245, 158, 11);
+  --dsw-static-deepseek-500: rgb(217, 119, 6);
+  --dsw-static-deepseek-600: rgb(180, 83, 9);
+  --dsw-static-deepseek-700-delete: rgb(146, 64, 14);
+  --dsw-static-deepseek-800: rgb(120, 53, 15);
+  --dsw-static-deepseek-900: rgb(69, 26, 3);
+}
+
+body[data-ds-dark-theme][data-accent='amber'] {
+  --dsw-static-deepseek-50: rgb(69, 26, 3);
+  --dsw-static-deepseek-100: rgb(120, 53, 15);
+  --dsw-static-deepseek-200: rgb(146, 64, 14);
+  --dsw-static-deepseek-300: rgb(180, 83, 9);
+  --dsw-static-deepseek-400: rgb(251, 191, 36);
+  --dsw-static-deepseek-450: rgb(245, 158, 11);
+  --dsw-static-deepseek-500: rgb(217, 119, 6);
+  --dsw-static-deepseek-600: rgb(251, 191, 36);
+  --dsw-static-deepseek-700-delete: rgb(180, 83, 9);
+  --dsw-static-deepseek-800: rgb(120, 53, 15);
+  --dsw-static-deepseek-900: rgb(69, 26, 3);
+}
+
+body[data-accent='emerald'] {
+  --dsw-static-deepseek-50: rgb(236, 253, 245);
+  --dsw-static-deepseek-100: rgb(209, 250, 229);
+  --dsw-static-deepseek-200: rgb(167, 243, 208);
+  --dsw-static-deepseek-300: rgb(110, 231, 183);
+  --dsw-static-deepseek-400: rgb(52, 211, 153);
+  --dsw-static-deepseek-450: rgb(16, 185, 129);
+  --dsw-static-deepseek-500: rgb(5, 150, 105);
+  --dsw-static-deepseek-600: rgb(4, 120, 87);
+  --dsw-static-deepseek-700-delete: rgb(6, 95, 70);
+  --dsw-static-deepseek-800: rgb(6, 78, 59);
+  --dsw-static-deepseek-900: rgb(2, 44, 34);
+}
+
+body[data-ds-dark-theme][data-accent='emerald'] {
+  --dsw-static-deepseek-50: rgb(2, 44, 34);
+  --dsw-static-deepseek-100: rgb(6, 78, 59);
+  --dsw-static-deepseek-200: rgb(6, 95, 70);
+  --dsw-static-deepseek-300: rgb(4, 120, 87);
+  --dsw-static-deepseek-400: rgb(52, 211, 153);
+  --dsw-static-deepseek-450: rgb(16, 185, 129);
+  --dsw-static-deepseek-500: rgb(5, 150, 105);
+  --dsw-static-deepseek-600: rgb(52, 211, 153);
+  --dsw-static-deepseek-700-delete: rgb(4, 120, 87);
+  --dsw-static-deepseek-800: rgb(6, 78, 59);
+  --dsw-static-deepseek-900: rgb(2, 44, 34);
+}
+
+body[data-accent='graphite'] {
+  --dsw-static-deepseek-50: rgb(248, 250, 252);
+  --dsw-static-deepseek-100: rgb(241, 245, 249);
+  --dsw-static-deepseek-200: rgb(226, 232, 240);
+  --dsw-static-deepseek-300: rgb(203, 213, 225);
+  --dsw-static-deepseek-400: rgb(148, 163, 184);
+  --dsw-static-deepseek-450: rgb(100, 116, 139);
+  --dsw-static-deepseek-500: rgb(71, 85, 105);
+  --dsw-static-deepseek-600: rgb(51, 65, 85);
+  --dsw-static-deepseek-700-delete: rgb(30, 41, 59);
+  --dsw-static-deepseek-800: rgb(15, 23, 42);
+  --dsw-static-deepseek-900: rgb(2, 6, 23);
+}
+
+body[data-ds-dark-theme][data-accent='graphite'] {
+  --dsw-static-deepseek-50: rgb(2, 6, 23);
+  --dsw-static-deepseek-100: rgb(15, 23, 42);
+  --dsw-static-deepseek-200: rgb(30, 41, 59);
+  --dsw-static-deepseek-300: rgb(51, 65, 85);
+  --dsw-static-deepseek-400: rgb(148, 163, 184);
+  --dsw-static-deepseek-450: rgb(100, 116, 139);
+  --dsw-static-deepseek-500: rgb(71, 85, 105);
+  --dsw-static-deepseek-600: rgb(148, 163, 184);
+  --dsw-static-deepseek-700-delete: rgb(51, 65, 85);
+  --dsw-static-deepseek-800: rgb(15, 23, 42);
+  --dsw-static-deepseek-900: rgb(2, 6, 23);
+}

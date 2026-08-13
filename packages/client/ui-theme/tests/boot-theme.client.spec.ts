@@ -3,7 +3,7 @@
 import { runInNewContext } from 'node:vm'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { injectBootTheme } from '../src/boot-theme.ts'
-import type { ThemePreference } from '../src/theme-settings.ts'
+import type { ThemeAccent, ThemeMotion, ThemePreference } from '../src/theme-settings.ts'
 
 const DARK_ATTRIBUTE = 'data-ds-dark-theme'
 
@@ -13,9 +13,11 @@ function mockSystemDark(matches: boolean): void {
 
 function executeBootstrap(
   preference?: ThemePreference,
+  accent?: ThemeAccent,
+  motion?: ThemeMotion,
   html = '<html><body><div id="root"></div><script type="module"></script></body></html>',
 ): string {
-  const injected = injectBootTheme(html, preference)
+  const injected = injectBootTheme(html, preference, accent, motion)
   const source = /<script>([\s\S]*?)<\/script>/.exec(injected)?.[1]
   if (source === undefined) throw new Error('theme bootstrap script missing')
   runInNewContext(source, { document, matchMedia: globalThis.matchMedia })
@@ -27,16 +29,20 @@ afterEach(() => {
   vi.unstubAllGlobals()
   document.documentElement.style.removeProperty('color-scheme')
   document.body.removeAttribute(DARK_ATTRIBUTE)
+  document.body.removeAttribute('data-accent')
+  document.body.removeAttribute('data-motion')
 })
 
 describe('theme boot index transform', () => {
   it('runs immediately inside the body before the shell mount', () => {
     mockSystemDark(false)
-    const html = executeBootstrap('dark', '<html><body class="app"><div id="root"></div></body></html>')
+    const html = executeBootstrap('dark', 'amber', 'reduced', '<html><body class="app"><div id="root"></div></body></html>')
     expect(html.indexOf('<script>')).toBeGreaterThan(html.indexOf('<body class="app">'))
     expect(html.indexOf('<script>')).toBeLessThan(html.indexOf('<div id="root">'))
     expect(document.documentElement.style.colorScheme).toBe('dark')
     expect(document.body.hasAttribute(DARK_ATTRIBUTE)).toBe(true)
+    expect(document.body.getAttribute('data-accent')).toBe('amber')
+    expect(document.body.getAttribute('data-motion')).toBe('reduced')
   })
 
   it('lets durable light override a dark OS and clears stale dark state', () => {

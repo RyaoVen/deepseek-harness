@@ -39,6 +39,17 @@
   - button "跟随系统" [pressed]:
     - img
     - text: 跟随系统
+  - text: 主题色
+  - button "深蓝" [pressed]
+  - button "青绿"
+  - button "紫罗兰"
+  - button "玫红"
+  - button "琥珀"
+  - button "翡翠"
+  - button "石墨"
+  - text: 动效
+  - button "标准" [pressed]
+  - button "减弱"
   - text: 繁忙时 Enter 键行为 仅在智能体运行时生效；Cmd/Ctrl+Enter 使用另一行为
   - button "排队发送":
     - text: 排队发送

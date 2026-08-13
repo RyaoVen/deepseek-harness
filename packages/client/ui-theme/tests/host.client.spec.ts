@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { WebServer } from '@deepseek-ai/dsh-host-webserver'
 import { SettingsProvider, settingsNamespace, type SettingsNamespace } from '@deepseek-ai/dsh-settings'
 import {
-  DEFAULT_PREFERENCE, THEME_SETTINGS_NAMESPACE, apply,
+  DEFAULT_ACCENT, DEFAULT_MOTION, DEFAULT_PREFERENCE, THEME_SETTINGS_NAMESPACE, apply,
 } from '@deepseek-ai/dsh-client-ui-theme'
 
 class MemorySettings extends SettingsProvider {
@@ -21,15 +21,19 @@ describe('ui-theme host', () => {
     const fiber = ctx.plugin({ apply })
     await fiber.await()
     const ns = settingsNamespace(THEME_SETTINGS_NAMESPACE)
-    expect(ctx.settings.get(ns)).toEqual({ preference: DEFAULT_PREFERENCE })
-    await ctx.settings.update(ns, { preference: 'dark' })
-    expect(ctx.settings.get(ns)).toEqual({ preference: 'dark' })
+    expect(ctx.settings.get(ns)).toEqual({
+      preference: DEFAULT_PREFERENCE, accent: DEFAULT_ACCENT, motion: DEFAULT_MOTION,
+    })
+    await ctx.settings.update(ns, { preference: 'dark', accent: 'violet', motion: 'reduced' })
+    expect(ctx.settings.get(ns)).toEqual({ preference: 'dark', accent: 'violet', motion: 'reduced' })
     await expect(ctx.settings.update(ns, { preference: 'sepia' })).rejects.toThrow()
+    await expect(ctx.settings.update(ns, { accent: 'neon' })).rejects.toThrow()
+    await expect(ctx.settings.update(ns, { motion: 'wavy' })).rejects.toThrow()
     await fiber.dispose()
     expect(ctx.settings.describe().map(row => row.ns)).not.toContain(ns)
   })
 
-  it('renders the current durable preference and disposes the index transform', async () => {
+  it('renders the current durable theme section and disposes the index transform', async () => {
     const ctx = new Context()
     await ctx.plugin(MemorySettings).await()
     let transform: ((html: string) => string) | undefined
@@ -43,8 +47,15 @@ describe('ui-theme host', () => {
     const fiber = ctx.plugin({ apply })
     await fiber.await()
     expect(transform?.('<body></body>')).toContain('const preference = "system"')
-    await ctx.settings.update(settingsNamespace(THEME_SETTINGS_NAMESPACE), { preference: 'dark' })
+    expect(transform?.('<body></body>')).toContain('setAttribute(\'data-accent\', "deepseek")')
+    expect(transform?.('<body></body>')).toContain('setAttribute(\'data-motion\', "standard")')
+    await ctx.settings.update(
+      settingsNamespace(THEME_SETTINGS_NAMESPACE),
+      { preference: 'dark', accent: 'amber', motion: 'reduced' },
+    )
     expect(transform?.('<body></body>')).toContain('const preference = "dark"')
+    expect(transform?.('<body></body>')).toContain('setAttribute(\'data-accent\', "amber")')
+    expect(transform?.('<body></body>')).toContain('setAttribute(\'data-motion\', "reduced")')
     await fiber.dispose()
     expect(disposed).toBe(true)
     expect(transform?.('<body></body>')).toContain('const preference = "system"')

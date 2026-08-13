@@ -1017,6 +1017,14 @@ export interface PiAiModelProfile {
    */
   input?: PiAiModality[]
   /**
+   * Wire protocol this model speaks, winning over the route's `api`. Must be a
+   * protocol in {@link supportedProtocols} or the installed catalog model's own
+   * api — restating it is the explicit no-op that says "this model stays put
+   * while the route repoints its siblings". Anything else fails resolution
+   * naming the route and model.
+   */
+  api?: string
+  /**
    * Selectable reasoning efforts. Absent inherits the installed catalog
    * entry's capability (a hand-declared model has none and does not reason);
    * `false` declares a non-reasoning model, which is how a profile strips

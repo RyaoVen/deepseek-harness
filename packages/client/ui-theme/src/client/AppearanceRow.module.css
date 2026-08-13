@@ -16,6 +16,13 @@
   color: var(--dsw-alias-label-primary);
 }
 
+.subTitle {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
 .cubeRow {
   display: flex;
   align-items: stretch;
@@ -49,9 +56,63 @@
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
+/* Motion cubes are text-only, so they sit lower than the icon cubes. */
+.motionCube {
+  padding: 10px 32px;
+}
+
 /* Selected cube: #F5F6F7 fill + #ADB2B8 border (static token — the bluish-400
  * step has no alias-layer name). */
 .selected {
   background: var(--dsw-alias-bg-module-platform);
   border-color: var(--dsw-static-neutral-bluish-400);
 }
+
+/* Accent swatches: one round preview per palette. The preview color is the
+ * palette's own 500 step as a module-local literal — the swatch must show its
+ * palette regardless of the accent currently applied, so it cannot read the
+ * overridable --dsw-static-deepseek-* tokens. These literals are palette
+ * definitions owned by this token-level package. */
+.swatchRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.swatch {
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.swatch:hover {
+  border-color: var(--dsw-alias-border-l3);
+}
+
+.swatchSelected {
+  border-color: var(--dsw-static-neutral-bluish-400);
+  box-shadow: 0 0 0 2px var(--dsw-alias-interactive-bg-hover-accent);
+}
+
+.swatchDot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.swatch_deepseek .swatchDot { background: rgb(65, 118, 230); }
+.swatch_teal .swatchDot { background: rgb(20, 184, 166); }
+.swatch_violet .swatchDot { background: rgb(139, 92, 246); }
+.swatch_rose .swatchDot { background: rgb(244, 63, 94); }
+.swatch_amber .swatchDot { background: rgb(245, 158, 11); }
+.swatch_emerald .swatchDot { background: rgb(16, 185, 129); }
+.swatch_graphite .swatchDot { background: rgb(100, 116, 139); }

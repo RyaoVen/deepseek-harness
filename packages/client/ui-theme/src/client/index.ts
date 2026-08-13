@@ -20,8 +20,10 @@ import { AppearanceRow } from './AppearanceRow.tsx'
 import { createAppearanceRowStore } from './settings-store.ts'
 import { en, zh, type ThemeKey } from './locales.ts'
 import {
-  DEFAULT_PREFERENCE, isThemePreference, THEME_PREFERENCE_FIELD, THEME_SETTINGS_NAMESPACE,
-  type ThemePreference, type ThemeSettings,
+  DEFAULT_ACCENT, DEFAULT_MOTION, DEFAULT_PREFERENCE, isThemeAccent, isThemeMotion,
+  isThemePreference, THEME_ACCENT_FIELD, THEME_MOTION_FIELD, THEME_PREFERENCE_FIELD,
+  THEME_SETTINGS_NAMESPACE,
+  type ThemeAccent, type ThemeMotion, type ThemePreference, type ThemeSettings,
 } from '../theme-settings.ts'
 
 export type { AppearanceRowComponentProps, AppearanceRowInjected } from './AppearanceRow.tsx'
@@ -82,6 +84,10 @@ export interface ThemeSnapshot {
   active: ThemeDefinition
   /** Registered themes in registration order. */
   themes: readonly ThemeDefinition[]
+  /** The persisted accent palette (projected as `body[data-accent]`). */
+  accent: ThemeAccent
+  /** The persisted motion level (projected as `body[data-motion]`). */
+  motion: ThemeMotion
   /** Monotonic change counter (registry or active changes). */
   revision: number
 }
@@ -152,6 +158,8 @@ export class ThemeRuntime {
   private readonly host: SettingsScope<ThemeSettings>
   private themes: ThemeDefinition[] = [...BUILTIN_THEMES]
   private preference: ThemePreference
+  private accent: ThemeAccent
+  private motion: ThemeMotion
   private revision = 0
   private snapshot: ThemeSnapshot
   private readonly media: MediaQueryList | undefined
@@ -168,6 +176,8 @@ export class ThemeRuntime {
     this.ctx = ctx
     this.host = host
     this.preference = DEFAULT_PREFERENCE
+    this.accent = DEFAULT_ACCENT
+    this.motion = DEFAULT_MOTION
     // Non-browser runs (node e2e booting the client tree) have no matchMedia.
     this.media = typeof matchMedia === 'undefined' ? undefined : matchMedia('(prefers-color-scheme: dark)')
     this.snapshot = this.buildSnapshot()
@@ -229,12 +239,49 @@ export class ThemeRuntime {
     this.publish()
   }
 
+  /**
+   * Switch the accent palette — the second user preference write entry. The
+   * palette is projected as `body[data-accent]`; unknown ids throw.
+   * @param id - an offered accent palette id.
+   */
+  setAccent(id: string): void {
+    if (!isThemeAccent(id)) throw new Error(`accent "${id}" is not offered`)
+    if (this.accent === id) return
+    this.accent = id
+    void this.host.set(THEME_ACCENT_FIELD, id)
+    this.publish()
+  }
+
+  /**
+   * Switch the motion level — the third user preference write entry. The level
+   * is projected as `body[data-motion]`; unknown levels throw.
+   * @param level - an offered motion level.
+   */
+  setMotion(level: string): void {
+    if (!isThemeMotion(level)) throw new Error(`motion "${level}" is not offered`)
+    if (this.motion === level) return
+    this.motion = level
+    void this.host.set(THEME_MOTION_FIELD, level)
+    this.publish()
+  }
+
   /** Adopt the scope's accepted durable preference without writing it back. */
   private adopt(): void {
     const section = this.host.getSnapshot().value
-    if (section === undefined || this.preference === section.preference) return
-    this.preference = section.preference
-    this.publish()
+    if (section === undefined) return
+    // Accent and motion default here too: a section stored before these fields
+    // existed, or a partial wire value, reads as the base palette and level
+    // rather than clearing the snapshot fields.
+    const accent = section.accent ?? DEFAULT_ACCENT
+    const motion = section.motion ?? DEFAULT_MOTION
+    if (this.preference !== section.preference
+      || this.accent !== accent
+      || this.motion !== motion) {
+      this.preference = section.preference
+      this.accent = accent
+      this.motion = motion
+      this.publish()
+    }
   }
 
   /**
@@ -302,6 +349,8 @@ export class ThemeRuntime {
       preference: this.preference,
       active: this.composeActive(active),
       themes: Object.freeze([...this.themes]),
+      accent: this.accent,
+      motion: this.motion,
       revision: this.revision,
     })
   }
@@ -391,7 +440,7 @@ export function apply(ctx: ClientContext): void {
   const store = createAppearanceRowStore()
   let bound: BoundActions<typeof store> | undefined
   const sync = (snapshot: ThemeSnapshot): void => {
-    bound?.sync(snapshot.preference, snapshot.revision)
+    bound?.sync(snapshot.preference, snapshot.accent, snapshot.motion, snapshot.revision)
   }
   ctx.on('theme/change', sync)
   const injected = (actions: BoundActions<typeof store>): AppearanceRowInjected => {
@@ -401,6 +450,8 @@ export function apply(ctx: ClientContext): void {
     sync(theme.getTheme())
     return {
       setTheme: (id) => { theme.setTheme(id) },
+      setAccent: (id) => { theme.setAccent(id) },
+      setMotion: (level) => { theme.setMotion(level) },
     }
   }
   ctx.slots.inject('settings.general.item', () => ctx.slots.register({
