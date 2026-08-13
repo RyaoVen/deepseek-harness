@@ -208,6 +208,9 @@
       "@deepseek-ai/dsh-client-ui-skill": ["./packages/client/ui-skill/src"],
       "@deepseek-ai/dsh-client-ui-subagent": ["./packages/client/ui-subagent/src"],
       "@deepseek-ai/dsh-client-ui-settings-plugins": ["./packages/client/ui-settings-plugins/src"],
+      // The extensions-center client subpath (`@deepseek-ai/dsh-extensions-center/client`)
+      // prefix-matches this entry; the generic wildcard cannot map it.
+      "@deepseek-ai/dsh-extensions-center": ["./packages/extensions/extensions-center/src"],
       "@deepseek-ai/dsh-client-ui-jobs": ["./packages/client/ui-jobs/src"],
       "@deepseek-ai/dsh-client-ui-plan": ["./packages/client/ui-plan/src"],
       "@deepseek-ai/dsh-client-ui-user-questions": ["./packages/client/ui-user-questions/src"],

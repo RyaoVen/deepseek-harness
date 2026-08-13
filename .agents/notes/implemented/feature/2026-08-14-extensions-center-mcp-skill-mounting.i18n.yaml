@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-14-extensions-center-mcp-skill-mounting.md
+2026-08-14-extensions-center-mcp-skill-mounting.md: 7bf0cb351ba3f761421df4b63b1c58fc179d39c3
+2026-08-14-extensions-center-mcp-skill-mounting.zh.md: 01ebe7a51a7ac14a2d1852b4e78fb1ad52334321
