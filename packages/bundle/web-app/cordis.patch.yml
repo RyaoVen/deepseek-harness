@@ -113,6 +113,10 @@
     - id: extensions-center
       name: '@deepseek-ai/dsh-extensions-center'
 
+    # Durable per-session agent modes: the mode service and the switch Remote.
+    - id: agent-modes
+      name: '@deepseek-ai/dsh-agent-modes'
+
     # Ordinary provider for the parsed Web flags. Its plugin-level injection
     # waits for cmdlineArgs; no launcher metadata or special row kind is needed.
     - id: web-startup
@@ -282,6 +286,10 @@
     # Usage dashboard: the model consumption section with four charts.
     - id: ui-usage-dashboard
       name: '@deepseek-ai/dsh-client-ui-usage-dashboard'
+
+    # Session mode switcher: the /mode command.
+    - id: ui-mode-switcher
+      name: '@deepseek-ai/dsh-client-ui-mode-switcher'
 
     # Plan control: the composer plan seat over the plan projection + /plan channel.
     - id: ui-plan

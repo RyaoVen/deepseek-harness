@@ -83,6 +83,7 @@ export const SERVICE_PAGE: Record<string, string> = {
   sessionPersistence: 'persistence.md',
   sessionQuery: 'session-query.md',
   sessionReferenceResolver: 'session-reference.md',
+  sessionModes: 'session.md',
   sessionProjectionCache: 'session-projection.md',
   sessionProjections: 'session-projection.md',
   sessions: 'session.md',
@@ -506,6 +507,7 @@ export const FOUNDATION_TYPE_NAMES: ReadonlySet<string> = new Set([
 /** Project types deliberately documented outside the subsystems catalog. */
 export const TYPE_LINK_EXEMPTIONS: Readonly<Record<string, string>> = {
   z: 'schemastery schema constructor is owned by vendor/schemastery (vendored upstream)',
+  AgentMode: 'the session-mode enum is owned by packages/context/agent-modes/README.md',
   BeginCommandRequest: 'event-local request contract is owned by packages/client/ui-input-trigger/src/types.ts',
   InsertReferenceRequest: 'event-local request contract is owned by packages/client/ui-input-trigger/src/types.ts',
   ConsumeTokenRequest: 'event-local request contract is owned by packages/client/ui-input-trigger/src/types.ts',

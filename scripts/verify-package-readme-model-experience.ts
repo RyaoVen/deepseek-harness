@@ -95,6 +95,8 @@ const SENTENCE_MODEL_EXPERIENCE: Readonly<Record<string, SentenceContract>> = {
   'packages/client/ui-settings-models': { kind: 'none', reason: 'Browser-side UI plugin layer; registers nothing model-facing.' },
   'packages/client/ui-settings-plugin-inventory': { kind: 'none', reason: 'Browser-side inventory projection; registers nothing model-facing.' },
   'packages/client/ui-usage-dashboard': { kind: 'none', reason: 'Browser-side usage chart surface over a read-only Remote; registers nothing model-facing.' },
+  'packages/client/ui-mode-switcher': { kind: 'none', reason: 'Browser-side command surface over a get/set Remote; registers nothing model-facing.' },
+  'packages/context/agent-modes': { kind: 'indirect', reason: 'The per-agent prompt section renders the mode guidance into the system prompt; the fold and Remote register no model surface of their own.' },
   'packages/client/locale': { kind: 'none', reason: 'Browser-side UI plugin layer; registers nothing model-facing.' },
   'packages/client/web': { kind: 'none', reason: 'Browser-side UI plugin layer; registers nothing model-facing.' },
   'packages/examples/agent-spine-demo': { kind: 'indirect', reason: 'The bundle only mounts model-facing child plugins.' },

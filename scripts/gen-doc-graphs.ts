@@ -139,6 +139,14 @@ const SERVICE_ROLES: ServiceRole[] = [
     note: 'Owns append-only Session instances and emits the durable session event feed.',
   },
   {
+    key: 'sessionModes',
+    pkg: 'agent-modes',
+    title: 'Durable per-session agent modes',
+    mode: 'core',
+    consumers: ['agent-modes'],
+    note: 'Folds the latest mode/set event from each session log; the agent-plane prompt section renders the current mode guidance.',
+  },
+  {
     key: 'invariants',
     pkg: 'invariants',
     title: 'Package-owned invariant registry',
