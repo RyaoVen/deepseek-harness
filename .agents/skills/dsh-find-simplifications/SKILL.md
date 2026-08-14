@@ -1,9 +1,9 @@
 ---
 name: dsh-find-simplifications
-description: 'Use when working in the deepseek-harness repo to find non-obvious simplification candidates, write proposed Agent Notes or inline TODO/FIXME/XXX notes, audit or coalesce superseded Agent Notes, or fold worthwhile simplification ideas from another PR; especially for dead, duplicated, speculative, over-built, added-then-removed, or hand-rolled-where-a-dependency-exists surfaces.'
+description: 在 deepseek-harness 仓库中寻找不明显的简化候选、撰写拟议的 Agent Notes 或行内 TODO/FIXME/XXX 注释、审计或合并已被取代的 Agent Notes，或从其他 PR 吸收有价值的简化思路时使用；尤其针对死代码、重复、投机性、过度构建、加了又删、以及本可依赖现有依赖却手写的表面。
 ---
 
-# Finding DeepSeek Harness Simplifications
+# 寻找 DeepSeek Harness 简化点
 
 This skill helps turn a broad "find things to simplify" request into evidence-backed Agent Notes that remove or collapse existing harness surface area. It is guidance, not a checklist: follow the code, keep judgment active, and prefer a few well-proven candidates over a pile of thin guesses.
 

@@ -1,9 +1,9 @@
 ---
 name: dsh-prose-standard
-description: Use when writing, reviewing, restoring, trimming, or auditing prose in the deepseek-harness repo, including deciding where documentation or comments are required across Markdown, JSDoc, code and test comments, prompts, descriptions, diagnostics, and CLI or UI strings.
+description: 在 deepseek-harness 仓库中撰写、审查、恢复、裁剪或审计散文时使用，包括决定 Markdown、JSDoc、代码与测试注释、提示词、描述、诊断信息以及 CLI 或 UI 文案中哪里需要文档或注释。
 ---
 
-# DeepSeek Harness Prose Standard
+# DeepSeek Harness 散文标准
 
 Write enough to preserve the contract, then remove reasoning transcripts, repetition, and decoration. A contract is an obligation, invariant, precondition, postcondition, or compatibility promise that a caller, callee, implementer, producer, or consumer relies on. This skill owns editorial judgment and required prose coverage; use [dsh-doc-standards](../dsh-doc-standards/SKILL.md) for placement, budgets, bilingual pairs, and documentation gates, and [dsh-trim-cot-leakage](../dsh-trim-cot-leakage/SKILL.md) for hunting and fixing reasoning-transcript leakage. It is guidance, not a script.
 

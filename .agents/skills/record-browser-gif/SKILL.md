@@ -1,9 +1,9 @@
 ---
 name: record-browser-gif
-description: Record browser or Web UI interaction demos as optimized GIFs using the available built-in browser, state-based frame capture, and deterministic encoding, then publish to a dedicated assets branch when the task includes attaching the GIF to a pull request. Use when asked to make, record, or generate a GIF that demonstrates a browser workflow, and for every pull request that changes product-user-visible GUI behavior, which MUST include a GIF recorded from the pull request's real server and model flow.
+description: 使用可用的内置浏览器、基于状态的帧捕获与确定性编码，将浏览器或 Web UI 交互演示录制成优化的 GIF，并在任务包含把 GIF 附到 pull request 时发布到专用资产分支。当被要求制作、录制或生成演示浏览器工作流的 GIF，以及每个改变产品用户可见 GUI 行为的 pull request 时使用——这类 PR 必须包含从该 PR 真实服务器与模型流程录制的 GIF。
 ---
 
-# Record Browser GIF
+# 录制浏览器 GIF
 
 Produce a short, truthful UI demonstration as a local GIF, and — only when the task includes attaching it to a pull request — publish it through the assets-branch workflow at the end of this skill. Use the browser-control skill for interaction and the bundled encoder for repeatable timing, dimensions, and size.
 

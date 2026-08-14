@@ -2577,6 +2577,14 @@ export const EVENT_API: readonly EventApiEntry[] = [
     parameters: [{ name: 'exec', description: 'the execution object that traversed the pipeline.' }, { name: 'result', description: 'a deep-frozen snapshot of the final returned result.' }],
   },
   {
+    name: 'usage/updated',
+    mode: 'emit',
+    signature: '\'usage/updated\'(): void',
+    summary: 'Published after a durable session log gained usage (an assistant message with adapter-reported tokens).',
+    description: 'Published after a durable session log gained usage (an assistant message with adapter-reported tokens). The web apiproxy forwards it verbatim (`API_REMOTE_FORWARDED_EVENTS`), so the browser dashboard can refresh without polling.',
+    parameters: [],
+  },
+  {
     name: 'workflow/agent-end',
     mode: 'emit',
     signature: '\'workflow/agent-end\'(info: WorkflowRunInfo, agent: WorkflowAgentEndInfo): void',
