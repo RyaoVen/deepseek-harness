@@ -235,6 +235,9 @@
     - id: tool-workflow
       name: '@deepseek-ai/dsh-tool-workflow'
 
+    - id: tool-vibe-workflow
+      name: '@deepseek-ai/dsh-tool-vibe-workflow'
+
     - id: tool-ralph
       name: '@deepseek-ai/dsh-tool-ralph'
       config:

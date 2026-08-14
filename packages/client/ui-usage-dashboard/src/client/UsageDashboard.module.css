@@ -99,8 +99,12 @@
   fill: var(--dsw-alias-state-business-primary);
 }
 
+/* Zero-usage days stay visible as outline-only cells: the empty background
+   would otherwise blend into the card surface. */
 .heatEmpty {
-  fill: var(--dsw-alias-bg-layer-2);
+  fill: transparent;
+  stroke: var(--dsw-alias-border-l2);
+  stroke-width: 1;
 }
 
 .legendRow {
