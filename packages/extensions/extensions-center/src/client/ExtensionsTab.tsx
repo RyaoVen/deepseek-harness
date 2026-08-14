@@ -109,17 +109,20 @@ function ServerRow({
           disabled={readOnly || saving}
           onChange={(event) => { onToggle(server.id, event.target.checked) }}
         />
-        <span className={css.rowName}>{server.name}</span>
-        <code className={css.rowMeta}>{server.id}</code>
-        <span className={css.rowMeta}>{server.transport}</span>
-        <button type="button" className={css.rowAction} disabled={readOnly || saving}
-          onClick={() => { setEditing(!editing) }}>
-          {t(editing ? 'cancel' : 'edit')}
-        </button>
-        <button type="button" className={css.rowAction} disabled={readOnly || saving}
-          onClick={() => { onRemove(server.id) }}>
-          {t('remove')}
-        </button>
+        <span className={css.rowText}>
+          <span className={css.rowName}>{server.name}</span>
+          <span className={css.rowMeta}>{server.id} · {server.transport}</span>
+        </span>
+        <span className={css.rowActions}>
+          <button type="button" className={css.rowAction} disabled={readOnly || saving}
+            onClick={() => { setEditing(!editing) }}>
+            {t(editing ? 'cancel' : 'edit')}
+          </button>
+          <button type="button" className={css.rowAction} disabled={readOnly || saving}
+            onClick={() => { onRemove(server.id) }}>
+            {t('remove')}
+          </button>
+        </span>
       </div>
       {editing && (
         <ServerFields t={t} initial={server} disabled={readOnly || saving} onSave={onSave} onCancel={() => { setEditing(false) }} />
@@ -303,15 +306,22 @@ function SkillRow({
           disabled={readOnly || saving}
           onChange={(event) => { onToggle(skill.name, event.target.checked) }}
         />
-        <span className={css.rowName}>{skill.name}</span>
-        <button type="button" className={css.rowAction} disabled={readOnly || saving}
-          onClick={() => { setEditing(!editing) }}>
-          {t(editing ? 'cancel' : 'edit')}
-        </button>
-        <button type="button" className={css.rowAction} disabled={readOnly || saving}
-          onClick={() => { onRemove(skill.name) }}>
-          {t('remove')}
-        </button>
+        <span className={css.rowText}>
+          <span className={css.rowName}>{skill.name}</span>
+          {skill.description !== undefined && skill.description !== '' && (
+            <span className={css.rowMeta}>{skill.description}</span>
+          )}
+        </span>
+        <span className={css.rowActions}>
+          <button type="button" className={css.rowAction} disabled={readOnly || saving}
+            onClick={() => { setEditing(!editing) }}>
+            {t(editing ? 'cancel' : 'edit')}
+          </button>
+          <button type="button" className={css.rowAction} disabled={readOnly || saving}
+            onClick={() => { onRemove(skill.name) }}>
+            {t('remove')}
+          </button>
+        </span>
       </div>
       {editing && (
         <SkillFields t={t} initial={skill} disabled={readOnly || saving} onSave={onSave} onCancel={() => { setEditing(false) }} />

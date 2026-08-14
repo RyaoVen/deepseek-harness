@@ -7,12 +7,16 @@ import { Context, Service } from '@deepseek-ai/cordis'
 import type { Session, SessionId } from '@deepseek-ai/dsh-session'
 // Type-only: pulls the sessionPersistence Context merge.
 import type {} from '@deepseek-ai/dsh-session-persistence'
+// Type-only: pulls the agent association and the agent/created lifecycle event.
+import type {} from '@deepseek-ai/dsh-agent'
+// Type-only: pulls the systemPrompt Context merge.
+import type {} from '@deepseek-ai/dsh-system-prompt'
 import { TypertRemoteService, Remote } from '@deepseek-ai/dsh-typert-protocol'
 // Typert-generated ./typert and ./remote artifacts import Zod at runtime.
 import type {} from 'zod'
 import { modeOf } from './fold.ts'
+import { MODE_SET_EVENT, modeGuidance, type AgentMode } from './types.ts'
 import * as designModeGuard from './guard.ts'
-import { MODE_SET_EVENT, type AgentMode } from './types.ts'
 
 export type * from './types.ts'
 export { DESIGN_BLOCKED_TOOLS, designModeDenial } from './guard.ts'
@@ -88,9 +92,23 @@ export class SessionModesGateway extends TypertRemoteService {
   }
 }
 
-/** Cordis plugin body: register the mode service, its Remote, and the design-mode tool guard. */
+/** Cordis plugin body: register the mode service, its Remote, the design-mode tool guard, and the per-agent guidance section. */
 export function apply(ctx: Context): void {
   ctx.plugin(SessionModes)
   ctx.plugin(SessionModesGateway)
   ctx.plugin(designModeGuard)
+  // The mode guidance is per-agent: a preset row would run in the preset's
+  // shared standing scope with no `ctx.agent` to fold. Agents publish through
+  // `agent/created` before their first turn, so install the section on each
+  // agent's own context here on the host plane instead.
+  ctx.on('agent/created', ({ agent }) => {
+    agent.ctx.systemPrompt.section({
+      name: 'agent-mode',
+      order: 30,
+      text: () => {
+        const mode = modeOf(agent.session.events)
+        return `Current session mode: ${mode}\n${modeGuidance(mode)}`
+      },
+    })
+  })
 }

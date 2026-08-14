@@ -19,6 +19,7 @@ import type { AgentMode } from '@deepseek-ai/dsh-agent-modes/types'
 import { en, zh, type ModeSwitcherLocaleKey } from './locales.ts'
 import { AGENT_MODES, ModeSeatController } from './mode-seat-store.ts'
 import { ModeSeat, type ModeSeatInjected } from './ModeSeat.tsx'
+import { ModeHeaderLabel, type ModeHeaderLabelInjected } from './ModeHeaderLabel.tsx'
 
 export type { ModeSwitcherLocaleKey } from './locales.ts'
 
@@ -119,5 +120,30 @@ export function apply(ctx: ClientContext): void {
         chip()
       }
     }, 'ui-mode-switcher: hero mode chip')
+  })
+
+  // The session-header mode chip: the visible switch inside a running session
+  // (the /mode command's counterpart). A session's mode is changeable at any
+  // time, so this chip both reads and writes — unlike the preset label.
+  ctx.inject(['slots', 'remote.sessionModesRemote'], (scope: ClientContext) => {
+    const headerInjected = (): ModeHeaderLabelInjected => ({
+      getMode: async (sessionId) => {
+        const result = await scope.remote.sessionModesRemote.get({ sessionId })
+        return result.ok ? result.value.mode : 'standard'
+      },
+      setMode: async (sessionId, mode) => {
+        const result = await scope.remote.sessionModesRemote.set({ sessionId, mode })
+        return result.ok
+      },
+    })
+    scope.effect(() => scope.slots.register({
+      name: 'conversation.session.header.actions',
+      id: 'session-mode',
+      // After the preset label (order -10): the mode is a runtime switch,
+      // while the preset names the session's fixed composition.
+      order: -5,
+      locale: NS,
+      inject: headerInjected,
+    }, ModeHeaderLabel), 'ui-mode-switcher: session header mode chip')
   })
 }
