@@ -26,6 +26,9 @@
       "path": "../../client/ui-settings"
     },
     {
+      "path": "../../client/ui-input-trigger"
+    },
+    {
       "path": "../../client/ui-slots"
     },
     {
