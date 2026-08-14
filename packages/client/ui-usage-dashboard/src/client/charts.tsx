@@ -7,6 +7,7 @@
 import type {
   HeatmapCell, LineShape, PieSlice, RadarShape,
 } from './projections.ts'
+import { compactCount } from './projections.ts'
 import css from './UsageDashboard.module.css'
 
 const CELL = 13
@@ -162,7 +163,7 @@ export function PieChart({ slices }: { slices: readonly PieSlice[] }) {
           </path>
         ))}
         <text className={css.pieCenterValue} x={center} y={center - 2} textAnchor="middle">
-          {slices.reduce((sum, slice) => sum + slice.totalTokens, 0).toLocaleString()}
+          {compactCount(slices.reduce((sum, slice) => sum + slice.totalTokens, 0))}
         </text>
         <text className={css.pieCenterLabel} x={center} y={center + 14} textAnchor="middle">tokens</text>
       </svg>

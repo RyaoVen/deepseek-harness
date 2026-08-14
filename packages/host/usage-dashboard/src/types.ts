@@ -55,3 +55,16 @@ export interface UsageSummary {
   /** Per-hour rows in hour order. */
   byHour: UsageHourRow[]
 }
+
+declare module '@deepseek-ai/cordis' {
+  interface Events {
+    /**
+     * Published after a durable session log gained usage (an assistant
+     * message with adapter-reported tokens). The web apiproxy forwards it
+     * verbatim (`API_REMOTE_FORWARDED_EVENTS`), so the browser dashboard can
+     * refresh without polling.
+     * @mode emit
+     */
+    'usage/updated'(): void
+  }
+}

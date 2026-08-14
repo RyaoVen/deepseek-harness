@@ -189,3 +189,15 @@ export function pieSlices(byDay: readonly UsageModelRow[]): PieSlice[] {
     return { model: row.model, totalTokens: row.totalTokens, fraction, start, end }
   })
 }
+
+/**
+ * Compact human-readable count: 1234 → "1.2K", 1_234_567 → "1.2M". Keeps
+ * small numbers verbatim so dashboard labels stay scannable.
+ * @param value - the count to format.
+ * @returns the compact string.
+ */
+export function compactCount(value: number): string {
+  if (value < 1000) return String(value)
+  if (value < 1_000_000) return `${(value / 1000).toFixed(value < 10_000 ? 1 : 0)}K`
+  return `${(value / 1_000_000).toFixed(1)}M`
+}

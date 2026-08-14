@@ -46,8 +46,17 @@ export class UsageDashboardController {
   inject(): UsageDashboardInjected {
     return {
       hooks: { usage: this.store },
-      refresh: () => { void this.load() },
+      refresh: () => { void this.refresh() },
     }
+  }
+
+  /**
+   * Re-read the summary from the Host. Exposed separately from the injected
+   * face so the forwarded `usage/updated` event can refresh without a slot
+   * consumer.
+   */
+  refresh(): Promise<void> {
+    return this.load()
   }
 
   private projection(): UsageDashboardState {
