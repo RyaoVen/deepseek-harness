@@ -28,7 +28,7 @@ function legacyHeaderDelta(seq = 0): SessionEvent {
   } as unknown as SessionEvent
 }
 
-/** An unsupported named-mode fixture emulating an untyped producer. */
+/** A mode/set fixture carrying a mode value outside the current vocabulary. */
 function legacyModeSet(seq = 0): SessionEvent {
   return {
     type: 'mode/set',
@@ -1892,7 +1892,10 @@ describe('SessionPersistence service registration', () => {
     await fiber.dispose()
   })
 
-  it('rejects a stored legacy named-mode event during load', async () => {
+  it('loads a stored mode/set event with a value outside the current vocabulary', async () => {
+    // mode/set is a supported agent-modes event; an unknown mode value loads
+    // and is ignored by the mode fold (which falls back to the default), so
+    // a session that switched modes under an older build must not be bricked.
     const id = SessionId('legacy-mode-load')
     const m = meta(id, '/legacy')
     const store: MemoryStore = new Map([[id, { meta: m, events: [legacyModeSet()] }]])
@@ -1900,8 +1903,8 @@ describe('SessionPersistence service registration', () => {
     await ctx.plugin(SessionStore)
     const fiber = await ctx.plugin(MemoryPersistence, { store })
 
-    await expect(ctx.sessionPersistence.load(id))
-      .rejects.toThrow('unsupported legacy mode/set event at seq 0')
+    const inspection = await ctx.sessionPersistence.load(id)
+    expect(inspection.events).toHaveLength(1)
     await fiber.dispose()
   })
 

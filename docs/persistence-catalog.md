@@ -494,6 +494,23 @@ Source: [`packages/llm/llm-retry/src/types.ts:9`](../packages/llm/llm-retry/src/
 
 Source: [`packages/llm/llm-retry/src/types.ts:11`](../packages/llm/llm-retry/src/types.ts)
 
+### `mode/*`
+
+<a id="modeset--log-only"></a>
+
+#### `mode/set` — log-only
+
+```ts persistence-catalog
+/**
+ * The session's current mode, appended on every switch. Latest write wins
+ * on replay; purely advisory for future turns, so readers that do not know
+ * the type may safely skip it.
+ */
+'mode/set': { mode: AgentMode }
+```
+
+Source: [`packages/context/agent-modes/src/types.ts:30`](../packages/context/agent-modes/src/types.ts)
+
 ### `permission/*`
 
 <a id="permissionpreset--log-only"></a>
