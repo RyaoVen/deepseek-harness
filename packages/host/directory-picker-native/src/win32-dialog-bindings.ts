@@ -16,12 +16,17 @@ import type { Win32DialogBindings, Win32FolderDialog } from './win32-dialog-logi
 
 interface KoffiFunction { (...args: unknown[]): unknown }
 interface KoffiLibrary { func(convention: string, name: string, result: string, args: string[]): KoffiFunction }
+/** `koffi.decode` is callable with (value, type) / (value, offset, type) and also exposes string helpers. */
+interface KoffiDecode {
+  (value: unknown, offsetOrType: unknown, type?: unknown): unknown
+  string16(ptr: unknown, length?: number): string
+}
 interface Koffi {
   load(path: string): KoffiLibrary
   proto(declaration: string): unknown
   pointer(type: unknown): unknown
   call(pointer: unknown, proto: unknown, ...args: unknown[]): unknown
-  decode(value: unknown, offsetOrType: unknown, type?: unknown): unknown
+  decode: KoffiDecode
   register(fn: (...args: unknown[]) => unknown, type: unknown): unknown
   unregister(callback: unknown): void
   sizeof(type: string): number
@@ -29,14 +34,15 @@ interface Koffi {
 }
 
 /**
- * Read a NUL-terminated UTF-16 string at a native address. `koffi.decode`
- * with `str16` walks the string in place and stops at the terminator, so it
- * never reads past the `CoTaskMemAlloc`'d buffer the COM call returned —
- * reading a fixed 64 KiB window here crashed with a V8 fatal (exit 134) on
- * real selections, because the allocation is sized to the path.
+ * Read a NUL-terminated UTF-16 string at a native address.
+ * `koffi.decode.string16` walks the string in place and stops at the
+ * terminator, so it never reads past the `CoTaskMemAlloc`'d buffer the COM
+ * call returned — the generic `koffi.decode(addr, 'str16')` form is not a
+ * supported decode shape (reading a fixed 64 KiB window here crashed with a
+ * V8 fatal, exit 134, on real selections).
  */
 function readUtf16(koffi: Koffi, address: unknown): string {
-  return koffi.decode(address, 'str16') as string
+  return koffi.decode.string16(address) as string
 }
 
 const COINIT_APARTMENTTHREADED = 0x2
@@ -57,6 +63,11 @@ const SLOT_RELEASE = 2
 const SLOT_SHOW = 3
 const SLOT_SET_OPTIONS = 9
 const SLOT_SET_TITLE = 17
+// GetResult sits at 20 (SetFileTypes..SetTitle = 4..17, then GetTitle,
+// SetOkButtonLabel, SetFileNameLabel = 18..20's neighbors); probing a real
+// dialog confirmed slot 20 writes the IShellItem out-pointer while 21 does
+// not, and the koffi `_Out_ void **` array convention crashes the worker —
+// the bindings below use transient-pointer Buffer outputs instead.
 const SLOT_GET_RESULT = 20
 /** IShellItem vtable slot for `GetDisplayName`. */
 const SLOT_GET_DISPLAY_NAME = 5
@@ -101,8 +112,12 @@ export async function loadWin32DialogBindings(): Promise<Win32DialogBindings> {
   const protoShow = koffi.proto('int32 __stdcall DshDialogShow(void *self, void *owner)')
   const protoSetOptions = koffi.proto('int32 __stdcall DshDialogSetOptions(void *self, uint32 options)')
   const protoSetTitle = koffi.proto('int32 __stdcall DshDialogSetTitle(void *self, str16 title)')
-  const protoGetResult = koffi.proto('int32 __stdcall DshDialogGetResult(void *self, _Out_ void **item)')
-  const protoGetDisplayName = koffi.proto('int32 __stdcall DshItemGetDisplayName(void *self, int32 form, _Out_ void **name)')
+  // Out-params use transient-pointer Buffers (koffi's output-docs pattern)
+  // rather than the `_Out_ void **` array convention, which crashes the
+  // worker under this koffi version (0xC0000005). The native code writes one
+  // pointer into the supplied buffer; decode the buffer afterwards.
+  const protoGetResult = koffi.proto('int32 __stdcall DshDialogGetResult(void *self, void *item)')
+  const protoGetDisplayName = koffi.proto('int32 __stdcall DshItemGetDisplayName(void *self, int32 form, void *name)')
   const protoRelease = koffi.proto('uint32 __stdcall DshComRelease(void *self)')
 
   /** Bind vtable slot `slot` of COM object `self` to a caller through `proto`. */
@@ -146,16 +161,17 @@ export async function loadWin32DialogBindings(): Promise<Win32DialogBindings> {
         setTitle: title => method(dialog, SLOT_SET_TITLE, protoSetTitle)(title),
         show: () => method(dialog, SLOT_SHOW, protoShow)(null),
         resultPath: () => {
-          const itemOut: unknown[] = [null]
+          const itemOut = Buffer.alloc(pointerSize)
           const gotItem = method(dialog, SLOT_GET_RESULT, protoGetResult)(itemOut)
           if (gotItem < 0) return { hr: gotItem }
-          const item = itemOut[0]
+          const item = koffi.decode(itemOut, 'void *')
           try {
-            const nameOut: unknown[] = [null]
+            const nameOut = Buffer.alloc(pointerSize)
             const gotName = method(item, SLOT_GET_DISPLAY_NAME, protoGetDisplayName)(SIGDN_FILESYSPATH, nameOut)
             if (gotName < 0) return { hr: gotName }
-            const path = readUtf16(koffi, nameOut[0])
-            coTaskMemFree(nameOut[0])
+            const namePtr = koffi.decode(nameOut, 'void *')
+            const path = readUtf16(koffi, namePtr)
+            coTaskMemFree(namePtr)
             return { hr: gotName, path }
           } finally {
             method(item, SLOT_RELEASE, protoRelease)()

@@ -41,9 +41,11 @@ process.on('disconnect', () => process.exit(0))
 void (async () => {
   try {
     const bindings = await loadWin32DialogBindings()
+    // Native crashes bypass the error channel below; the step trace goes to
+    // stderr (inherited by the shell) so a crash leaves a breadcrumb.
     const path = runFolderDialog(bindings, title, (threadId) => {
       post({ kind: 'showing', threadId } satisfies Win32DialogWorkerMessage)
-    })
+    }, (step) => { console.error(`[picker] ${step}`) })
     post({ kind: 'done', path } satisfies Win32DialogWorkerMessage)
   } catch (error: unknown) {
     const message = error instanceof Error ? (error.stack ?? error.message) : String(error)
