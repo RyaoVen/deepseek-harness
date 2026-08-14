@@ -1,0 +1,43 @@
+/* Composer attach toolbar: Skill / MCP buttons above the input, sized to the
+   resident tool-row chrome (ui-conversation InputBar). */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--dsw-alias-button-floating-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+}
+
+.itemName {
+  font-weight: 500;
+}
+
+.itemDetail {
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary);
+}

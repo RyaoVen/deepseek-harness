@@ -347,6 +347,21 @@ export class SessionInputShell implements SessionInput {
     this.notices.set({ level, text, seq: this.noticeSeq })
   }
 
+  /**
+   * Append one reference to the end of the draft (the composer-attach
+   * pick path: choosing a skill or MCP server from the toolbar menu splices
+   * an `@name ` mention after whatever is already typed). One draft-changed
+   * transaction, one undo step, no span CAS — the pick targets the tail.
+   * @param text - the mention text to append (e.g. `@skill `).
+   * @returns whether the draft changed.
+   */
+  appendText(text: string): boolean {
+    const before = this.core.state.draft
+    const draft = before === '' ? text : before.endsWith(' ') ? before + text : `${before} ${text}`
+    this.setDraft(draft)
+    return this.core.state.draft !== before
+  }
+
   // ---- wiring-layer extras (not on the frozen SessionInput face) ----
 
   /** Teardown: abort any in-flight attempt and stop accepting async settlements. */
