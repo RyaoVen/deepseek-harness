@@ -14,6 +14,19 @@
   font-weight: 600;
 }
 
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .intro {
   margin: 0;
   font-size: 13px;
@@ -22,19 +35,23 @@
 
 .refresh {
   align-self: flex-start;
+  margin-top: 2px;
+  flex: none;
   border: 1px solid var(--dsw-alias-border-l2);
-  border-radius: 6px;
-  padding: 5px 14px;
+  border-radius: 999px;
+  padding: 5px 16px;
   background: transparent;
   color: var(--dsw-alias-label-secondary);
   font: inherit;
   font-size: 13px;
   cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 
 .refresh:hover:not(:disabled) {
   border-color: var(--dsw-alias-state-business-primary);
   color: var(--dsw-alias-state-business-primary);
+  background: var(--dsw-alias-interactive-bg-hover);
 }
 
 .refresh:disabled {
@@ -58,6 +75,35 @@
   font-size: 13px;
 }
 
+/* Summary tiles: the four headline numbers above the charts. */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 10px;
+  background: var(--dsw-alias-bg-layer-2);
+}
+
+.tileValue {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--dsw-alias-label-primary);
+}
+
+.tileLabel {
+  font-size: 12px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -71,6 +117,7 @@
   padding: 14px;
   border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 10px;
+  background: var(--dsw-alias-bg-layer-2);
 }
 
 .cardHeading {

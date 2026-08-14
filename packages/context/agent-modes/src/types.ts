@@ -20,7 +20,7 @@ export const DEFAULT_AGENT_MODE: AgentMode = 'standard'
 /** The design mode value: think and produce designs only, no I/O. */
 export const DESIGN_MODE: AgentMode = 'design'
 
-declare module '@deepseek-ai/dsh-session' {
+declare module '@deepseek-ai/dsh-session/types' {
   interface SessionEventMap {
     /**
      * The session's current mode, appended on every switch. Latest write wins

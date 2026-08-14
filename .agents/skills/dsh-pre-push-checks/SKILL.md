@@ -1,9 +1,9 @@
 ---
 name: dsh-pre-push-checks
-description: Use before pushing, force-pushing, marking ready for review, or claiming checks pass on a deepseek-harness branch, and immediately after gh stack sync publishes rewritten branches, to select the smallest tests and checks that cover the outgoing or just-published diff without reflexively running the full repository suite.
+description: 在 deepseek-harness 分支上推送、强制推送、标记 ready for review 或宣称检查通过之前，以及 gh stack sync 发布重写分支之后立即使用，用来挑选覆盖待推送或刚发布 diff 的最小测试与检查，而不是反射性地跑完整仓库测试套件。
 ---
 
-# DSH Pre-Push Checks
+# DSH 推送前检查
 
 Use this skill to run relevant local evidence once before a `deepseek-harness` push. The sole ordering exception is `gh stack sync`, which may publish a cascading rebase before the rewritten layers can be validated; validate them immediately afterward and do not merge until the evidence passes. Git hooks are intentionally narrow: pre-commit fixes staged lint, checks staged whitespace, and guards vendored-source metadata; pre-push runs only the incremental repository typecheck. CI owns exhaustive coverage and the platform matrix.
 

@@ -1,9 +1,9 @@
 ---
 name: dsh-trim-cot-leakage
-description: Use when auditing or fixing prose that reads like a leaked reasoning transcript — dead design-session citations such as (decision N), audit item codes, or §N of uncommitted drafts; change narration such as "used to", "no longer", "this cut"; stack or review vantage ("a later PR in this stack", "rejected in review"); reviewer-addressed justifications; control-flow narration; or hedged planning residue in comments, JSDoc, docs, or Agent Notes.
+description: 审计或修复读起来像泄漏推理记录的散文时使用——如 (decision N) 这类失效设计会话引用、审计项编号、未提交草稿的 §N 段落；「used to」「no longer」「this cut」之类的叙述；栈或审查视角（「本栈中的后续 PR」「审查中被否决」）；面向审查者的辩解；控制流叙述；或注释、JSDoc、文档、Agent Notes 中含糊的规划残留。
 ---
 
-# Trimming Chain-of-Thought Leakage
+# 裁剪思维链泄漏
 
 Chain-of-thought leakage is prose whose vantage is the authoring session rather than the repository: it cites artifacts only that session could see, narrates the change instead of the state, or argues with a reviewer who has left. The fix is never deletion alone when a passage carries factual clauses — restate each so it stands at HEAD, then delete the transcript around it; a passage carrying none (an audit code, control-flow narration) is deleted outright. **REQUIRED BACKGROUND:** [dsh-prose-standard](../dsh-prose-standard/SKILL.md) owns the complete-proposition rule this skill applies; the [committed-artifact-citations note](../../notes/implemented/process/2026-08-09-committed-artifact-citations.md) owns the citation rule's rationale. It is guidance, not a script.
 

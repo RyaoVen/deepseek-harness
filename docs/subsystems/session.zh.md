@@ -637,7 +637,7 @@ get(session: Session): AgentMode
 set(session: Session, mode: AgentMode): number
 ```
 
-Source: [`packages/context/agent-modes/src/index.ts:28`](../../packages/context/agent-modes/src/index.ts)
+Source: [`packages/context/agent-modes/src/index.ts:32`](../../packages/context/agent-modes/src/index.ts)
 
 <a id="ctxsessions--sessionstore"></a>
 
@@ -873,4 +873,27 @@ Awaited parallel durability checkpoint: every listener runs and the caller await
 Types: [Scoped](scope.md)
 
 Source: [`packages/core/session/src/index.ts:85`](../../packages/core/session/src/index.ts)
+
+<a id="usage-events"></a>
+
+### `usage/*` events
+
+<a id="usageupdated--emit"></a>
+
+#### `usage/updated` — emit
+
+Published after a durable session log gained usage (an assistant message with adapter-reported tokens). The web apiproxy forwards it verbatim (`API_REMOTE_FORWARDED_EVENTS`), so the browser dashboard can refresh without polling.
+
+```ts cordis-catalog
+/**
+ * Published after a durable session log gained usage (an assistant
+ * message with adapter-reported tokens). The web apiproxy forwards it
+ * verbatim (`API_REMOTE_FORWARDED_EVENTS`), so the browser dashboard can
+ * refresh without polling.
+ * @mode emit
+ */
+'usage/updated'(): void
+```
+
+Source: [`packages/host/usage-dashboard/src/types.ts:68`](../../packages/host/usage-dashboard/src/types.ts)
 <!-- END GENERATED cordis-surface -->

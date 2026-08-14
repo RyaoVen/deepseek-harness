@@ -26,7 +26,10 @@ export const NS = 'settings.usage'
 export const inject = ['slots', 'locale', 'remote', 'remote.usageDashboard']
 
 /**
- * Mount the usage section into the settings shell.
+ * Mount the usage section into the settings shell. The summary auto-refreshes
+ * on the host's forwarded `usage/updated` event (an assistant message with
+ * adapter-reported tokens landed in a durable log), so the dashboard follows
+ * real usage without polling or manual refreshes.
  * @param ctx - the browser plugin context.
  */
 export function apply(ctx: ClientContext): void {
@@ -41,6 +44,8 @@ export function apply(ctx: ClientContext): void {
     return result.value
   }
   const controller = new UsageDashboardController(list)
+  const offUsageUpdated = ctx.remote.$on('usage/updated', () => { void controller.refresh() })
+  ctx.effect(() => offUsageUpdated, 'ui-usage-dashboard: usage/updated subscription')
 
   ctx.slots.inject('settings.section', () => ctx.slots.register({
     name: 'settings.section',

@@ -421,11 +421,15 @@
   cursor: pointer;
 }
 
-/* Plain-text reference highlight: a pure range mark over the
-   draft's own glyphs — advance untouched, so the two layers cannot drift.
-   Chip family colors; clone keeps rounded ends on soft-wrap fragments. */
+/* Plain-text reference chip: an inserted `/name` or `@name` reference renders
+   as a capsule so it reads as a structured mention, not ordinary text. A pure
+   range mark over the draft's own glyphs — advance untouched, so the two
+   layers cannot drift; clone keeps rounded ends on soft-wrap fragments. */
 .textRef {
-  background-color: transparent;
+  background: rgba(97, 135, 216, 0.14);
+  border: 1px solid rgba(97, 135, 216, 0.4);
+  border-radius: 999px;
+  padding: 0 6px;
   color: var(--dsw-alias-state-business-primary);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;

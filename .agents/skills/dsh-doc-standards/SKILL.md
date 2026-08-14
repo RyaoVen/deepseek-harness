@@ -1,9 +1,9 @@
 ---
 name: dsh-doc-standards
-description: 'Use when writing, moving, reviewing, or auditing documentation in the deepseek-harness repo — choosing hierarchy and detail, separating tutorials from references, checking tutorial progression, trimming doc slop, responding to a verify-doc-budgets failure, or requests like "improve the docs", "audit the docs", "where should this be documented", or "this doc is too long".'
+description: 在 deepseek-harness 仓库中撰写、移动、审查或审计文档时使用——选择层级与详略、区分教程与参考、检查教程递进、裁剪文档冗余、处理 verify-doc-budgets 失败，或应对「改进文档」「审计文档」「该记在哪」以及「文档太长」之类的请求。
 ---
 
-# Applying the DeepSeek Harness Documentation Standard
+# 应用 DeepSeek Harness 文档标准
 
 The documentation rules live in [docs/AGENTS.md](../../../docs/AGENTS.md). This workflow covers placement, corpus audits, budgets, and validation across Markdown, JSDoc, and code comments. It is guidance, not a script; use [dsh-prose-standard](../dsh-prose-standard/SKILL.md) for required coverage and editorial judgment, and never treat length alone as a defect.
 

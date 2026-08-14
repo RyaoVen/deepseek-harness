@@ -29,6 +29,16 @@ export class UsageDashboardGateway extends TypertRemoteService {
 
   constructor(ctx: Context) {
     super(ctx, 'usageDashboard')
+    // Fold input arrives as durable assistant/message events; drop the
+    // session's cached fold and tell the browser the summary changed. The
+    // emit is unconditional (the next summarize re-reads the revision and
+    // skips unchanged sessions), so a dropped cache never blocks a refresh.
+    ctx.on('session/event', (session, event) => {
+      if (event.type !== 'assistant/message') return
+      if (event.data.usage === undefined) return
+      this.cache.delete(session.id)
+      ctx.emit('usage/updated')
+    })
   }
 
   /**

@@ -7,6 +7,7 @@ export type UsageDashboardLocaleKey =
   | 'lineHeading' | 'lineIntro' | 'pieHeading' | 'pieIntro'
   | 'calls' | 'tokens' | 'total' | 'models' | 'days' | 'hours'
   | 'legendCalls' | 'noUsage'
+  | 'totalCalls' | 'totalTokens' | 'activeModels' | 'activeDays'
 
 /** English copy. */
 export const en: Record<UsageDashboardLocaleKey, string> = {
@@ -33,6 +34,10 @@ export const en: Record<UsageDashboardLocaleKey, string> = {
   hours: 'Hours',
   legendCalls: 'Calls',
   noUsage: 'No usage',
+  totalCalls: 'Total calls',
+  totalTokens: 'Total tokens',
+  activeModels: 'Active models',
+  activeDays: 'Active days',
 }
 
 /** Simplified Chinese copy. */
@@ -60,4 +65,8 @@ export const zh: Record<UsageDashboardLocaleKey, string> = {
   hours: '时段',
   legendCalls: '调用',
   noUsage: '无用量',
+  totalCalls: '总调用',
+  totalTokens: '总 Token',
+  activeModels: '在用模型',
+  activeDays: '活跃天数',
 }

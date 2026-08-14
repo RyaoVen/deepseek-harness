@@ -100,33 +100,47 @@ function check(hr: number, what: string): number {
  * @param title - the dialog title text.
  * @param onShowing - called with the native thread id immediately before the
  *   blocking `Show`, so a driver on another thread can close the dialog.
+ * @param onStep - optional step trace (production workers log it to stderr so
+ *   a native crash — which bypasses the worker's error channel — leaves a
+ *   breadcrumb of how far the conversation got).
  * @returns the selected filesystem path, or null when the user cancels.
  */
 export function runFolderDialog(
   bindings: Win32DialogBindings,
   title: string,
   onShowing: (threadId: number) => void,
+  onStep?: (step: string) => void,
 ): string | null {
+  const step = (name: string): void => { onStep?.(name) }
+  step('dpi')
   bindings.setThreadDpiAwareness()
+  step('coinit')
   check(bindings.coInitializeSta(), 'CoInitializeEx')
   // From here the apartment is initialized (S_OK or S_FALSE) and must be
   // uninitialized exactly once on every path.
   try {
+    step('create')
     const dialog = bindings.createFolderDialog()
     try {
+      step('options')
       check(dialog.setOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_NOCHANGEDIR), 'SetOptions')
+      step('title')
       check(dialog.setTitle(title), 'SetTitle')
       onShowing(bindings.currentThreadId())
+      step('show')
       const shown = dialog.show()
       if (shown === HRESULT_CANCELLED) return null
       check(shown, 'Show')
+      step('get-result')
       const result = dialog.resultPath()
       check(result.hr, 'GetResult')
       return result.path as string
     } finally {
+      step('release-dialog')
       dialog.release()
     }
   } finally {
+    step('co-uninit')
     bindings.coUninitialize()
   }
 }

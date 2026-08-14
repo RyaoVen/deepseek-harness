@@ -57,8 +57,8 @@ const appPackageFiles: Readonly<Record<string, readonly string[]>> = {
   // what the payload policy forbids, so the bundle ships without them.
   '@deepseek-ai/dsh-web-frontend': ['dist', '!dist/**/*.map'],
   // The desktop shell is source-published: the Electron main, the decoration
-  // window (page + preloads), and the docs.
-  '@deepseek-ai/dsh-desktop': ['main.js', 'preload.js', 'decor-preload.js', 'decor.html', 'decor.css', 'decor.js', 'README.md', 'README.zh.md'],
+  // window (page + preloads), the whale icon assets, and the docs.
+  '@deepseek-ai/dsh-desktop': ['main.js', 'preload.js', 'decor-preload.js', 'decor.html', 'decor.css', 'decor.js', 'whale.svg', 'whale-16.png', 'whale-32.png', 'whale-128.png', 'whale-256.png', 'README.md', 'README.zh.md'],
 }
 
 /** The subset of package.json fields this constraint check cares about. */

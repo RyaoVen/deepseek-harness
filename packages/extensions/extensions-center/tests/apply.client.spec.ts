@@ -7,6 +7,7 @@ import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
 import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
 import { TestRemote, usePinnedBrowserLanguages } from '@deepseek-ai/dsh-client-test-runtime'
 import { SettingsScopeBinder } from '@deepseek-ai/dsh-client-ui-settings/client'
+import type { InputTriggerSource } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
 import { apply, inject } from '../src/client/index.ts'
 import type { ExtensionsTabFace } from '../src/client/index.ts'
 
@@ -26,6 +27,7 @@ async function bench() {
       settings: { describe: vi.fn(() => Promise.resolve({ rpcId: 's', result: { ok: false, error: {} } })) },
     },
   } as never)
+  ctx.provide('inputTriggers', { registerSource: (_src: InputTriggerSource) => () => {} })
   await ctx.plugin(SettingsScopeBinder).await()
   return { ctx, slots: ctx.get('slots') as SlotRegistry }
 }
@@ -39,7 +41,7 @@ function declareRoot(slots: SlotRegistry): void {
 
 describe('extensions-center apply', () => {
   it('declares the services it uses', () => {
-    expect(inject).toEqual(['slots', 'locale', 'settingsScope'])
+    expect(inject).toEqual(['slots', 'locale', 'settingsScope', 'inputTriggers'])
   })
 
   it('registers one Extensions tab inside the Plugins section slot', async () => {

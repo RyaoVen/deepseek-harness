@@ -61,10 +61,10 @@ function boot() {
     })
   }
 
-  const orb = document.getElementById('orb')
-  if (orb === null) return
+  const whale = document.getElementById('whale')
+  if (whale === null) return
   // Pointer-driven window move (the frameless page cannot use
-  // -webkit-app-region: that would swallow the orb's click). A pointer that
+  // -webkit-app-region: that would swallow the whale's click). A pointer that
   // travels beyond the click threshold moves the window; a release under the
   // threshold counts as a click and returns to the main window.
   const CLICK_THRESHOLD = 4
@@ -72,15 +72,15 @@ function boot() {
   let lastX = 0
   let lastY = 0
   let travelled = 0
-  orb.addEventListener('pointerdown', (event) => {
+  whale.addEventListener('pointerdown', (event) => {
     if (event.button !== 0 || pointerId !== null) return
     pointerId = event.pointerId
     lastX = event.screenX
     lastY = event.screenY
     travelled = 0
-    orb.setPointerCapture(event.pointerId)
+    whale.setPointerCapture(event.pointerId)
   })
-  orb.addEventListener('pointermove', (event) => {
+  whale.addEventListener('pointermove', (event) => {
     if (event.pointerId !== pointerId) return
     const dx = event.screenX - lastX
     const dy = event.screenY - lastY
@@ -89,13 +89,13 @@ function boot() {
     travelled += Math.abs(dx) + Math.abs(dy)
     if (dx !== 0 || dy !== 0) window.decorBridge?.drag(dx, dy)
   })
-  orb.addEventListener('pointerup', (event) => {
+  whale.addEventListener('pointerup', (event) => {
     if (event.pointerId !== pointerId) return
     pointerId = null
     if (travelled < CLICK_THRESHOLD) window.decorBridge?.activate()
   })
-  orb.addEventListener('pointercancel', () => { pointerId = null })
-  orb.addEventListener('contextmenu', (event) => {
+  whale.addEventListener('pointercancel', () => { pointerId = null })
+  whale.addEventListener('contextmenu', (event) => {
     event.preventDefault()
     window.decorBridge?.menu()
   })

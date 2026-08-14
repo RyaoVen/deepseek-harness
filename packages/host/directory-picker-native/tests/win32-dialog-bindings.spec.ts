@@ -70,7 +70,9 @@ function installFakeKoffi(world: ComWorld): void {
         case 3: return world.showHr
         case 20: {
           if (world.getResultHr < 0) return world.getResultHr
-          ;(args[0] as unknown[])[0] = itemPtr
+          // The bindings pass a transient-pointer Buffer for the out param;
+          // the fake records the written pointer exactly like the vtable read.
+          outBuffers.set(args[0], itemPtr)
           return 0
         }
         case 2: world.released.push('dialog'); return 0
@@ -80,7 +82,7 @@ function installFakeKoffi(world: ComWorld): void {
     switch (slot) {
       case 5: {
         if (world.getDisplayNameHr < 0) return world.getDisplayNameHr
-        ;(args[1] as unknown[])[0] = namePtr
+        outBuffers.set(args[1], namePtr)
         return 0
       }
       case 2: world.released.push('item'); return 0
@@ -134,18 +136,20 @@ function installFakeKoffi(world: ComWorld): void {
       },
       register: (fn: (hwnd: unknown, lparam: unknown) => number) => { world.registered += 1; return { fn } },
       unregister: () => { world.unregistered += 1 },
-      decode: (value: unknown, offsetOrType: unknown): unknown => {
-        if (offsetOrType === 'str16') return (value as FakePtr).text
-        if (typeof offsetOrType === 'number') {
-          // Vtable slot read: offsets must be multiples of the fake width.
-          if (offsetOrType % FAKE_POINTER_SIZE !== 0) throw new Error(`vtable offset ${offsetOrType} is not pointer-aligned`)
-          const owner = (value as { owner: FakePtr }).owner
-          return { call: (args: unknown[]) => dispatch(owner, offsetOrType / FAKE_POINTER_SIZE, args) }
-        }
-        // decode(x, 'void *'): out-buffer read or vtable read.
-        if (outBuffers.has(value)) return outBuffers.get(value)
-        return { owner: value as FakePtr }
-      },
+      decode: Object.assign(
+        (value: unknown, offsetOrType: unknown): unknown => {
+          if (typeof offsetOrType === 'number') {
+            // Vtable slot read: offsets must be multiples of the fake width.
+            if (offsetOrType % FAKE_POINTER_SIZE !== 0) throw new Error(`vtable offset ${offsetOrType} is not pointer-aligned`)
+            const owner = (value as { owner: FakePtr }).owner
+            return { call: (args: unknown[]) => dispatch(owner, offsetOrType / FAKE_POINTER_SIZE, args) }
+          }
+          // decode(x, 'void *'): out-buffer read or vtable read.
+          if (outBuffers.has(value)) return outBuffers.get(value)
+          return { owner: value as FakePtr }
+        },
+        { string16: (ptr: unknown) => (ptr as FakePtr).text as string },
+      ),
       call: (fn: { call: (args: unknown[]) => number }, _proto: unknown, _self: unknown, ...args: unknown[]) => fn.call(args),
     },
   }))

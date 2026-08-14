@@ -97,7 +97,7 @@ export interface ExtensionsCenterActions {
 }
 
 /** Section shape the scope resolves; mirrors the Host schema, spelled here. */
-interface ExtensionsCenterSection {
+export interface ExtensionsCenterSection {
   servers: McpServerDraft[]
   skills: SkillDraft[]
 }

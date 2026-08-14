@@ -22,6 +22,7 @@ async function bench() {
     constructor(serviceCtx: Context) {
       super(serviceCtx, 'remote')
     }
+    $on(): () => void { return () => {} }
   }
   new RemoteService(ctx)
   const summarize = vi.fn(() => Promise.resolve({
