@@ -278,11 +278,6 @@
     - id: ui-settings-plugins
       name: '@deepseek-ai/dsh-client-ui-settings-plugins'
 
-    # Extensions center: the MCP server and skill management tab inside the
-    # Plugins settings page.
-    - id: extensions-center
-      name: '@deepseek-ai/dsh-extensions-center'
-
     # Usage dashboard: the model consumption section with four charts.
     - id: ui-usage-dashboard
       name: '@deepseek-ai/dsh-client-ui-usage-dashboard'
@@ -421,10 +416,16 @@
 # scope-aware — one copy per mounted preset means every child gets `report`
 # registered once per live session, which throws on the second.
 
+# The workflow engine and its tools live in the agent presets' isolated realm
+# (nothing outside an agent reads them); the web host plane disables the base
+# rows so the `workflowEngine` service exists exactly once per session tree.
 - id: workflow-worker-thread
   disabled: true
 
 - id: tool-workflow
+  disabled: true
+
+- id: tool-vibe-workflow
   disabled: true
 
 - id: tool-ralph

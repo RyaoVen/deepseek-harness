@@ -13,6 +13,8 @@ const CELL = 13
 const CELL_GAP = 2
 const HEATMAP_PAD_LEFT = 26
 const HEATMAP_PAD_TOP = 4
+const HEATMAP_WIDTH = HEATMAP_PAD_LEFT + 12 * (CELL + CELL_GAP)
+const HEATMAP_HEIGHT = HEATMAP_PAD_TOP + 7 * (CELL + CELL_GAP)
 
 /** Calendar heatmap: one column per week, one row per weekday. */
 export function HeatmapChart({ cells }: { cells: readonly HeatmapCell[] }) {
@@ -21,8 +23,9 @@ export function HeatmapChart({ cells }: { cells: readonly HeatmapCell[] }) {
       className={css.chart}
       role="img"
       aria-label="heatmap"
-      width={HEATMAP_PAD_LEFT + 12 * (CELL + CELL_GAP)}
-      height={HEATMAP_PAD_TOP + 7 * (CELL + CELL_GAP)}
+      viewBox={`0 0 ${HEATMAP_WIDTH} ${HEATMAP_HEIGHT}`}
+      width={HEATMAP_WIDTH}
+      height={HEATMAP_HEIGHT}
     >
       {['Mon', 'Wed', 'Fri', 'Sun'].map((label, index) => (
         <text key={label} className={css.axisLabel} x={0} y={HEATMAP_PAD_TOP + (index * 2 + 1) * (CELL + CELL_GAP) + 4}>
@@ -185,6 +188,14 @@ function polar(cx: number, cy: number, radius: number, index: number, count: num
 /** One donut arc path from start to end angle (clockwise). */
 function arcPath(cx: number, cy: number, radius: number, start: number, end: number): string {
   const [startX, startY] = polar(cx, cy, radius, start / (Math.PI * 2), 1)
+  if (end - start >= Math.PI * 2 - 1e-6) {
+    // A full circle: a single arc whose start and end coincide degenerates to
+    // an invisible zero-length path, so split the ring into two semicircles.
+    const [halfX, halfY] = polar(cx, cy, radius, (start + Math.PI) / (Math.PI * 2), 1)
+    const [endX, endY] = polar(cx, cy, radius, end / (Math.PI * 2), 1)
+    return `M ${startX.toFixed(2)} ${startY.toFixed(2)} A ${radius} ${radius} 0 0 1 ${halfX.toFixed(2)} ${halfY.toFixed(2)}`
+      + ` A ${radius} ${radius} 0 0 1 ${endX.toFixed(2)} ${endY.toFixed(2)}`
+  }
   const [endX, endY] = polar(cx, cy, radius, end / (Math.PI * 2), 1)
   const largeArc = end - start > Math.PI ? 1 : 0
   return `M ${startX.toFixed(2)} ${startY.toFixed(2)} A ${radius} ${radius} 0 ${largeArc} 1 ${endX.toFixed(2)} ${endY.toFixed(2)}`

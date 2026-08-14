@@ -25,6 +25,7 @@ import type { ComposerBlock } from './input/blocks.ts'
 import { InputHub } from './input/hub.ts'
 import { ComposerSubmissionPolicy } from './input/submission-policy.ts'
 import { InputBar } from './skeleton/InputBar.tsx'
+import { ComposerAttach, type ComposerAttachInjected } from './skeleton/ComposerAttach.tsx'
 import { EnterBehaviorRow } from './settings/EnterBehaviorRow.tsx'
 import type { EnterBehaviorRowInjected } from './settings/EnterBehaviorRow.tsx'
 import { ChatView } from './chat/ChatView.tsx'
@@ -208,6 +209,7 @@ export function apply(ctx: Context): void {
       'conversation.input.right': { kind: 'list', scope: 'session' },
       'conversation.hero.workspace': { kind: 'single', scope: 'root' },
       'conversation.hero.agentPreset': { kind: 'single', scope: 'root' },
+      'conversation.hero.agentMode': { kind: 'single', scope: 'root' },
     },
     inject: (sessionId: SessionId | undefined): ConversationInjected => ({
       hooks: { composerBlock: sessionId === undefined ? ABSENT_BLOCK : composerBlocks.storeFor(sessionId) },
@@ -359,6 +361,62 @@ export function apply(ctx: Context): void {
       }
     },
   }, InputBar)
+
+  // The composer attach toolbar: Skill / MCP buttons in the input tool row.
+  // Data crosses the apply closure (skills RPC + the extensions-center
+  // settings section, bound here so its scope rides this plugin's fiber);
+  // picking appends an `@name ` mention to the draft.
+  const extensionScope = ctx.settingsScope.bind<{ servers: readonly { id: string; name: string; enabled: boolean }[] }>({
+    namespace: 'extensions-center',
+  })
+  slots.register({
+    name: 'conversation.input.left',
+    id: 'composer-attach',
+    order: 10,
+    locale: NS,
+    inject: (sessionId: SessionId): ComposerAttachInjected => {
+      const connectionApi = ctx.get('connection')?.api
+      return {
+        listSkills: async () => {
+          if (connectionApi === undefined) return []
+          const response = await connectionApi.skills.list({ sessionId })
+          if (!response.result.ok) return []
+          return response.result.value.skills.map((skill: { name: string; description?: string }) => ({
+            reference: `@${skill.name} `,
+            label: skill.name,
+            ...(skill.description === undefined ? {} : { detail: skill.description }),
+          }))
+        },
+        listServers: async () => {
+          // The bind above starts the first Host read on activation; wait for
+          // it (bounded) so the menu never shows a transient empty list.
+          if (extensionScope.getSnapshot().status !== 'ready') {
+            await new Promise<void>((resolve) => {
+              const deadline = setTimeout(resolve, 4000)
+              const off = extensionScope.subscribe(() => {
+                if (extensionScope.getSnapshot().status === 'ready') {
+                  clearTimeout(deadline)
+                  off()
+                  resolve()
+                }
+              })
+            })
+          }
+          const snapshot = extensionScope.getSnapshot()
+          if (snapshot.status !== 'ready') return []
+          const servers = snapshot.value?.servers ?? []
+          return servers.filter(server => server.enabled).map(server => ({
+            reference: `@${server.name} `,
+            label: server.name,
+            detail: server.id,
+          }))
+        },
+        append: (reference) => {
+          inputHub.shell(sessionId).appendText(reference)
+        },
+      }
+    },
+  }, ComposerAttach)
 
   // The approval takeover: a selector-routed entry of the chain this package
   // just declared (the ui-user-questions registration pattern; the entry lives here

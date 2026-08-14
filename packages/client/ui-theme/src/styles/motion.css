@@ -1,9 +1,13 @@
 /* Decorative-motion policy. `body[data-motion]` carries the persisted level
- * (the presenter and the boot script both write it); the `reduced` level and
- * the OS `prefers-reduced-motion` preference compress every animation and
- * transition to effectively nothing — durations collapse rather than remove,
- * so animation lifecycle events still fire. `standard` adds no override: the
- * base stylesheets' transitions and the shared keyframes below apply. */
+ * (the presenter and the boot script both write it); the `reduced` level
+ * compresses every animation and transition to effectively nothing —
+ * durations collapse rather than remove, so animation lifecycle events still
+ * fire. The OS `prefers-reduced-motion` preference applies the same collapse
+ * ONLY while the user has not explicitly chosen the standard level: a
+ * deliberate `standard` selection overrides the OS hint, so a machine with
+ * system animations off still shows the product's motion when the user asks
+ * for it. `standard` adds no other override: the base stylesheets'
+ * transitions and the shared keyframes below apply. */
 
 body[data-motion='reduced'] *,
 body[data-motion='reduced'] *::before,
@@ -16,9 +20,9 @@ body[data-motion='reduced'] *::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  body:not([data-motion='standard']) *,
+  body:not([data-motion='standard']) *::before,
+  body:not([data-motion='standard']) *::after {
     animation-duration: 0.001s !important;
     animation-delay: 0s !important;
     animation-iteration-count: 1 !important;

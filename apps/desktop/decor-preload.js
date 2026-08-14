@@ -11,4 +11,6 @@ contextBridge.exposeInMainWorld('decorBridge', {
   activate: () => ipcRenderer.send('decor:activate'),
   /** Right-click on the mascot: show the decoration context menu. */
   menu: () => ipcRenderer.send('decor:menu'),
+  /** Drag the mascot: move the decoration window by the pointer delta. */
+  drag: (dx, dy) => ipcRenderer.send('decor:drag', { dx, dy }),
 })

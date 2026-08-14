@@ -222,7 +222,7 @@ function decorContextMenu() {
   ])
 }
 
-/** Wire the shell IPC: the decoration switch and the decor window's intents. */
+/** Wire the shell IPC: the decoration switch, the decor window's intents, and the title-bar controls. */
 function mountIpc() {
   ipcMain.handle('desktop:decor-get', () => decorEnabled)
   ipcMain.on('desktop:decor-set', (_event, enabled) => {
@@ -237,6 +237,24 @@ function mountIpc() {
   ipcMain.on('decor:menu', () => {
     decorContextMenu().popup({ window: decorWindow })
   })
+  // Pointer-driven drag from the decor page: the page reports screen-space
+  // deltas and the shell moves the frameless window by them.
+  ipcMain.on('decor:drag', (_event, delta) => {
+    if (decorWindow === undefined || decorWindow.isDestroyed()) return
+    const [x, y] = decorWindow.getPosition()
+    const dx = typeof delta?.dx === 'number' ? delta.dx : 0
+    const dy = typeof delta?.dy === 'number' ? delta.dy : 0
+    decorWindow.setPosition(Math.round(x + dx), Math.round(y + dy))
+  })
+  // Frameless-window controls driven by the GUI's own title bar.
+  ipcMain.on('window:minimize', () => { mainWindow?.minimize() })
+  ipcMain.on('window:maximize-toggle', () => {
+    if (mainWindow === undefined || mainWindow.isDestroyed()) return
+    if (mainWindow.isMaximized()) mainWindow.unmaximize()
+    else mainWindow.maximize()
+  })
+  ipcMain.on('window:close', () => { mainWindow?.close() })
+  ipcMain.handle('window:is-maximized', () => mainWindow?.isMaximized() ?? false)
 }
 
 /** Build the tray icon and its menu once the window exists. */
@@ -267,6 +285,9 @@ async function boot() {
     minWidth: 480,
     minHeight: 360,
     autoHideMenuBar: true,
+    // Frameless: the GUI's own title bar (drag region + window controls)
+    // replaces the native frame inside the desktop shell.
+    frame: false,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,

@@ -1,8 +1,23 @@
+/* The shell frame stacks a desktop title bar above the three-column grid;
+   without one (plain browser) the frame simply fills the root. */
+.root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.titlebarRow {
+  flex: none;
+  height: 36px;
+}
+
 .frame {
   position: relative; /* anchors the drag handles, which straddle column borders */
   display: grid;
   grid-template-rows: 100%;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
   background: var(--dsw-alias-bg-base);
   /* Collapse/expand animates the tracks on the deepsuite sider curve

@@ -172,6 +172,14 @@ export const zh = {
   'json.truncated': '… 已截断，共 {total} 字符',
   'clock.md': '{m}月{d}日',
   'clock.ymd': '{y}年{m}月{d}日',
+  'attach.skills': '技能',
+  'attach.mcp': 'MCP',
+  'attach.skillsHint': '从会话可见的技能中选择，插入引用到输入框',
+  'attach.mcpHint': '从配置的 MCP 服务器中选择，插入引用到输入框',
+  'attach.skillsEmpty': '没有可用的技能',
+  'attach.mcpEmpty': '没有配置 MCP 服务器',
+  'attach.skillsFailed': '技能列表读取失败',
+  'attach.mcpFailed': 'MCP 服务器列表读取失败',
 } satisfies Record<string, string>
 
 /** The conversation namespace key union. */
@@ -341,4 +349,12 @@ export const en = {
   'json.truncated': '… truncated, {total} characters total',
   'clock.md': '{m}/{d}',
   'clock.ymd': '{y}-{m}-{d}',
+  'attach.skills': 'Skills',
+  'attach.mcp': 'MCP',
+  'attach.skillsHint': 'Pick from the skills visible to this session and insert a reference into the input',
+  'attach.mcpHint': 'Pick from the configured MCP servers and insert a reference into the input',
+  'attach.skillsEmpty': 'No skills available',
+  'attach.mcpEmpty': 'No MCP servers configured',
+  'attach.skillsFailed': 'Skill list could not be read',
+  'attach.mcpFailed': 'MCP server list could not be read',
 } satisfies Record<ConversationKey, string>

@@ -1,0 +1,47 @@
+/* New-session mode chip, styled to sit beside the agent-preset chip. */
+
+.seat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--dsw-alias-label-primary);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.seat:hover {
+  background: var(--dsw-alias-button-floating-hover);
+}
+
+.seatLabel {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 220px;
+}
+
+.itemName {
+  font-weight: 500;
+}
+
+.itemDetail {
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary);
+}
