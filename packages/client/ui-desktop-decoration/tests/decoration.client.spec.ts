@@ -20,6 +20,10 @@ describe('ui-desktop-decoration', () => {
     const bridge: DesktopBridge = {
       getDecorEnabled: async () => true,
       setDecorEnabled: () => {},
+      minimize: () => {},
+      toggleMaximize: () => {},
+      isMaximized: async () => false,
+      close: () => {},
     }
     Object.defineProperty(globalThis, 'window', {
       value: { desktopBridge: bridge },

@@ -1,0 +1,57 @@
+/* Frameless-window title bar: full-width drag region with the window
+   controls docked right. The drag region uses Electron's native
+   -webkit-app-region, so buttons must opt back out (no-drag). */
+
+.titlebar {
+  height: 36px;
+  display: flex;
+  align-items: stretch;
+  background: var(--dsw-alias-bg-base);
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dragRegion {
+  flex: 1;
+  min-width: 0;
+  -webkit-app-region: drag;
+}
+
+.controls {
+  display: flex;
+  align-items: stretch;
+  -webkit-app-region: no-drag;
+}
+
+.control,
+.controlClose {
+  width: 46px;
+  display: grid;
+  place-items: center;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: default;
+}
+
+.control svg,
+.controlClose svg {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.control:hover {
+  background: var(--dsw-alias-button-floating-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.controlClose:hover {
+  background: var(--dsw-static-red-600);
+  color: var(--dsw-static-neutral-bluish-50);
+}

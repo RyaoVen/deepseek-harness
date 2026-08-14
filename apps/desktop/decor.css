@@ -1,7 +1,8 @@
 /* Transparent desktop decoration: a draggable mascot orb with three states
- * (idle / thinking / done). The whole stage is a drag region except the orb
- * itself, which is clickable (click returns to the main window) and opens a
- * context menu on right-click. All animation respects prefers-reduced-motion. */
+ * (idle / thinking / done). Dragging and clicking are implemented in decor.js
+ * (pointer events + a window-move IPC) rather than -webkit-app-region, so the
+ * orb is both draggable and clickable: a drag moves the window, a click
+ * without movement returns to the main window, right-click opens the menu. */
 
 * {
   margin: 0;
@@ -19,18 +20,16 @@ body {
   background: transparent;
 }
 
-/* Everything but the orb drags the window. */
 #stage {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  -webkit-app-region: drag;
+  touch-action: none;
 }
 
 #orb {
-  -webkit-app-region: no-drag;
   position: relative;
   width: 88px;
   height: 88px;
