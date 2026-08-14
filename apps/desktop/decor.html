@@ -7,12 +7,37 @@
 </head>
 <body data-status="idle">
   <div id="stage">
-    <div id="orb" aria-hidden="true">
-      <div class="eye left"></div>
-      <div class="eye right"></div>
-      <div class="mouth"></div>
+    <div id="whale" aria-hidden="true">
+      <svg viewBox="0 0 120 84" width="120" height="84">
+        <defs>
+          <linearGradient id="whale-body" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#679efe" />
+            <stop offset="0.55" stop-color="#4176e6" />
+            <stop offset="1" stop-color="#6a4cf0" />
+          </linearGradient>
+        </defs>
+        <!-- tail -->
+        <path class="tail" d="M24 42 Q6 30 4 16 Q14 34 24 36 Z" fill="#3d63c8" />
+        <!-- body -->
+        <ellipse class="body" cx="74" cy="42" rx="50" ry="25" fill="url(#whale-body)" />
+        <!-- belly -->
+        <ellipse class="belly" cx="74" cy="50" rx="40" ry="13" fill="rgba(255,255,255,0.28)" />
+        <!-- fin -->
+        <path class="fin" d="M58 46 Q52 62 66 60 Q64 52 58 46 Z" fill="#3d63c8" />
+        <!-- eye (facing left) -->
+        <circle class="eye" cx="42" cy="36" r="4.5" fill="#ffffff" />
+        <circle class="pupil" cx="40.5" cy="36" r="2.2" fill="#16244f" />
+        <!-- smile -->
+        <path class="smile" d="M30 48 Q38 54 48 50" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round" />
+      </svg>
     </div>
-    <div id="thinking-ring" aria-hidden="true"></div>
+    <div id="spout" aria-hidden="true">
+      <svg viewBox="0 0 60 60" width="60" height="60">
+        <path class="drop d1" d="M30 8 Q26 20 30 30 Q34 20 30 8 Z" fill="rgba(255,255,255,0.9)" />
+        <path class="drop d2" d="M18 18 Q14 28 18 36 Q22 28 18 18 Z" fill="rgba(255,255,255,0.7)" />
+        <path class="drop d3" d="M42 18 Q38 28 42 36 Q46 28 42 18 Z" fill="rgba(255,255,255,0.7)" />
+      </svg>
+    </div>
     <div id="done-badge" aria-hidden="true">✓</div>
   </div>
   <script src="./decor.js"></script>

@@ -11,6 +11,11 @@
     "decor.html",
     "decor.css",
     "decor.js",
+    "whale.svg",
+    "whale-16.png",
+    "whale-32.png",
+    "whale-128.png",
+    "whale-256.png",
     "README.md",
     "README.zh.md"
   ],
@@ -44,6 +49,11 @@
       "decor.html",
       "decor.css",
       "decor.js",
+      "whale.svg",
+      "whale-16.png",
+      "whale-32.png",
+      "whale-128.png",
+      "whale-256.png",
       "package.json"
     ],
     "extraResources": [

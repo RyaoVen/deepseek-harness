@@ -17,9 +17,9 @@ import { fileURLToPath } from 'node:url'
 const require = createRequire(import.meta.url)
 const HERE = dirname(fileURLToPath(import.meta.url))
 
-/** 16x16 blue dot tray glyph (data URL; no asset file needed). */
+/** 16x16 whale tray glyph (data URL; no asset file needed). */
 const TRAY_ICON_DATA_URL =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTM0A1t6AAAAK0lEQVQ4T2P8//8/AyUYE6EGgBgMDGwMDGQZQKph1CFQjGGgBjAyMABq1AY3BHnB7QAAAABJRU5ErkJggg=='
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABWUlEQVQ4jWNgGAV4QUz3f26Pif/ZcclbFD7ixBCMm/hdOXri1znhfV9fhPV8/h/c+fF/QOuHh75Nb5f4NLwND63/zwZT61D6xBlFc9Skb9YF8799yZvz9X9w56f/ge0f/vu1vPvv3fj2v2fd6/9u1S//O1c8e+5Q+jQapN4j73kFigGh3Z+ulDYv/X/x7k+wRh+YxpqX/10qX/x3LHv237Xo+X+P/Bf/fbJftvqlvZgK12xf/58FZGP61I//Uye9/+9Z//q/e80ruEaXYohG7+yX//0zXv4PSn75OzTpZQKKC7wb3kV71b36CNdYDtHoDtKY8+K/X8bL/5HZr/+HJry6Fh73xg1ryM7a+lGtfM7bOQWT3z7P7nnzP6f9zf+ijrf/y1rf/c+vevchLuVdZ1LSa1788cfAwPD//3+2CYs/mDb1vQ0rqP3kHxX/0iA09D8zQY0MIw8AAEi1yFhLWwCkAAAAAElFTkSuQmCC'
 
 /** Path of the window-state JSON the shell owns in userData. */
 function statePath() {
@@ -285,6 +285,8 @@ async function boot() {
     minWidth: 480,
     minHeight: 360,
     autoHideMenuBar: true,
+    // The whale mark the product uses everywhere: taskbar/alt-tab icon.
+    icon: join(HERE, 'whale-256.png'),
     // Frameless: the GUI's own title bar (drag region + window controls)
     // replaces the native frame inside the desktop shell.
     frame: false,
